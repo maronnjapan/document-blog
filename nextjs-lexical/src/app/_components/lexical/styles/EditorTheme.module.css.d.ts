@@ -1,0 +1,34 @@
+declare const styles: {
+  readonly "code": string;
+  readonly "h1": string;
+  readonly "h2": string;
+  readonly "h3": string;
+  readonly "h4": string;
+  readonly "h5": string;
+  readonly "h6": string;
+  readonly "listitem": string;
+  readonly "listitemChecked": string;
+  readonly "listitemUnchecked": string;
+  readonly "nestedListItem": string;
+  readonly "ol": string;
+  readonly "quote": string;
+  readonly "textBold": string;
+  readonly "textCode": string;
+  readonly "textItalic": string;
+  readonly "textStrikethrough": string;
+  readonly "textSubscript": string;
+  readonly "textSuperscript": string;
+  readonly "textUnderline": string;
+  readonly "textUnderlineStrikethrough": string;
+  readonly "tokenAttr": string;
+  readonly "tokenComment": string;
+  readonly "tokenFunction": string;
+  readonly "tokenOperator": string;
+  readonly "tokenProperty": string;
+  readonly "tokenPunctuation": string;
+  readonly "tokenSelector": string;
+  readonly "tokenVariable": string;
+  readonly "ul": string;
+};
+export = styles;
+

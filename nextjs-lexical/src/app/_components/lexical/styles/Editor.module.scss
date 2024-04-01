@@ -1,0 +1,26 @@
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans+JP);
+
+.editorContainer {
+    position: relative;
+    padding: 24px;
+    min-height: 240px;
+}
+
+
+.contentEditable-wrapper {
+    position: relative;
+}
+
+.contentEditable {
+    outline: none;
+    font-family: 'Noto Sans JP', sans-serif
+}
+
+.placeholder {
+    position: absolute;
+    color: #888888;
+    top: 24px;
+    left: 24px;
+    pointer-events: none;
+    user-select: none;
+}
