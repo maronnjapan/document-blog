@@ -23,6 +23,10 @@ import SaveElasticSearchPlugin from "./plugins/SaveElasticSearchPlugin";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
 import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
 import LexicalAutoLinkPlugin from "./plugins/AutoLinkPlugin";
+import LinkPreviewPlugin from "./plugins/LinkPreviewPlugin";
+import { ImageRegister } from "./plugins/InserImagePlugin/register";
+import ClipboardImageHandler from "./plugins/InserImagePlugin/clipboard-handler";
+import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
 
 const initialConfig: ComponentProps<typeof LexicalComposer>["initialConfig"] = {
     namespace: "MyEditor",
@@ -67,6 +71,10 @@ export const Lexical = ({ postId }: { postId: string }) => {
             <LexicalAutoLinkPlugin></LexicalAutoLinkPlugin>
             <ImportPlugin postId={postId}></ImportPlugin>
             <LinkPlugin />
+            <LinkPreviewPlugin></LinkPreviewPlugin>
+            <ImageRegister />
+            <CollapsiblePlugin></CollapsiblePlugin>
+            <ClipboardImageHandler></ClipboardImageHandler>
             {!!floatingAnchorElem && <>
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} isLinkEditMode={isLinkEditMode} setIsLinkEditMode={setIsLinkEditMode}></FloatingLinkEditorPlugin>
                 <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem}></FloatingTextFormatToolbarPlugin>

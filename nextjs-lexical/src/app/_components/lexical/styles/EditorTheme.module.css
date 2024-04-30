@@ -35,17 +35,17 @@
 }
 
 .ul {
-  margin-left: 16px;
+  margin-left: 0.25rm;
   list-style-position: inside;
 }
 
 .ol {
-  margin-left: 16px;
+  margin-left: 0.25rem;
   list-style-position: inside;
 }
 
 .listitem {
-  margin: 4px 32px;
+  margin: 4px 1rem;
 }
 
 .nestedListItem {
@@ -185,4 +185,9 @@
 
 .textUnderlineStrikethrough {
   text-decoration: underline line-through;
+}
+
+.link {
+  color: #0f83fd;
+  word-break: break-all;
 }

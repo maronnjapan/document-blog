@@ -1,0 +1,19 @@
+import { Box } from "@chakra-ui/react";
+import SideMenu, { SideMenuProps } from "../menu/SideMenu";
+import { getTitles } from "@/libs/handle-file";
+import { pagesPath } from "@/router/$path";
+
+export default function Layout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    const posts = getTitles()
+    const urlItems: SideMenuProps['items'] = posts.map((post) => ({ url: `${pagesPath.posts._postId(post.postId).$url().path}`, title: post.title }))
+    return (
+        <Box display={'flex'}>
+            <SideMenu items={urlItems}></SideMenu>
+            {children}
+        </Box>
+    )
+}

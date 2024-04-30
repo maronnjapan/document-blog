@@ -1,5 +1,5 @@
 'use client';
-import styles from "../styles/Toolbar.module.css";
+import styles from "./styles/Toolbar.module.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, $isRangeSelection, TextNode, ElementNode } from "lexical";
 import { $createCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, $isCodeNode } from "@lexical/code";
@@ -13,9 +13,10 @@ import {
     ListType
 } from '@lexical/list';
 import { $setBlocksType } from "@lexical/selection";
-import { useCallback, useEffect, useState } from "react";
-import { TbChecklist, TbCode, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect } from "react-icons/tb";
-import { CODE_LANGUAGE_COMMAND } from "./CodeHighlightPlugin";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { TbChecklist, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbUpload } from "react-icons/tb";
+import { CODE_LANGUAGE_COMMAND } from "../CodeHighlightPlugin";
+import { INSERT_IMAGE_COMMAND } from "../InserImagePlugin/command";
 
 const HeadingBlocks: { [key in HeadingTagType]: string } = {
     h1: "Heading 1",
@@ -36,6 +37,7 @@ const SupportedBlocks = {
     paragraph: "Paragraph",
     quote: "Quote",
     code: "Code Block",
+    file: "Upload File"
 } as const;
 type BlockType = keyof typeof SupportedBlocks;
 
@@ -49,6 +51,7 @@ export default function ToolBarPlugin() {
     const [blockType, setBlockType] = useState<BlockType>("paragraph");
     const [codeLanguage, setCodeLanguage] = useState('');
     const [editor] = useLexicalComposerContext();
+    const fileInput = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         return editor.registerUpdateListener(({ editorState }) => {
@@ -127,6 +130,33 @@ export default function ToolBarPlugin() {
             editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
         }
     }, [blockType, editor]);
+
+    const clickFileInput = () => {
+        const fileInputRef = fileInput.current;
+        if (fileInputRef) { fileInputRef.click() }
+    }
+
+    const loadImage = (files: FileList | null) => {
+        const reader = new FileReader();
+
+        if (files !== null) {
+            reader.readAsDataURL(files[0]);
+            const file = files[0]
+
+            reader.onload = function () {
+                if (typeof reader.result === 'string') {
+                    editor.update(() => {
+                        editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+                            altText: file.name,
+                            src: reader.result?.toString() ?? ''
+                        });
+                    });
+                }
+            };
+
+
+        }
+    };
 
 
     return (
@@ -211,6 +241,18 @@ export default function ToolBarPlugin() {
             >
                 <TbCode />
             </button>
+            <button
+                type="button"
+                role="checkbox"
+                title={SupportedBlocks['file']}
+                aria-label={SupportedBlocks['file']}
+                aria-checked={blockType === 'file'}
+                onClick={clickFileInput}
+            >
+                <TbFile></TbFile>
+            </button>
+            <input id="file-upload" type='file' ref={fileInput} className={styles["file-input"]}
+                onChange={(e) => loadImage(e.target.files)} />
             {blockType === "code" && (
                 <div className={styles.select}>
                     <select

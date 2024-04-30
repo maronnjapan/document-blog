@@ -6,6 +6,7 @@ declare const styles: {
   readonly "h4": string;
   readonly "h5": string;
   readonly "h6": string;
+  readonly "link": string;
   readonly "listitem": string;
   readonly "listitemChecked": string;
   readonly "listitemUnchecked": string;

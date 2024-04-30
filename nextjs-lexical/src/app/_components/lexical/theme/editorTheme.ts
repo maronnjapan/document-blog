@@ -64,4 +64,5 @@ export const theme: EditorThemeClasses = {
         underline: styles.textUnderline,
         underlineStrikethrough: styles.textUnderlineStrikethrough,
     },
+    link: styles.link
 };

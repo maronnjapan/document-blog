@@ -13,14 +13,13 @@ const AutoSaveTitleInput = (props: { postId: string, title: string }) => {
             clearTimeout(timer.current);
         }
         timer.current = setTimeout(async () => {
-            console.log(e.target.value)
             await storeTitle(props.postId, e.target.value.length > 0 ? e.target.value : '無題')
         }, 1000);
     }
 
     return <>
+        <label>タイトル</label>
         <input value={title} onChange={(e) => storeAndSetTitle(e)} />
-        <p>{title}</p>
     </>;
 }
 

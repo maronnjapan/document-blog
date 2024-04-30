@@ -35,7 +35,8 @@ import { createPortal } from 'react-dom';
 import { getSelectedNode } from '../../utils/getSelectedNode';
 import { setFloatingElemPositionForLinkEditor } from '../../utils/setFloatingElemPositionForLinkEditor';
 import { sanitizeUrl } from '../../utils/url';
-import { TbCheck, TbCross, TbEdit, TbTrash, TbX } from 'react-icons/tb';
+import { TbCards, TbCheck, TbCross, TbEdit, TbTrash, TbX } from 'react-icons/tb';
+import { INSERT_LINK_PREVIEW_COMMAND } from '../LinkPreviewPlugin/command';
 
 function FloatingLinkEditor({
     editor,
@@ -253,6 +254,7 @@ function FloatingLinkEditor({
             ) : (
                 <div className="link-view">
                     <a
+                        style={{ color: 'blue' }}
                         href={sanitizeUrl(linkUrl)}
                         target="_blank"
                         rel="noopener noreferrer">
@@ -278,6 +280,15 @@ function FloatingLinkEditor({
                                 editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
                             }}
                         ><TbTrash></TbTrash></div>
+                        <div
+                            className="link-trash"
+                            role="button"
+                            tabIndex={0}
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => {
+                                editor.dispatchCommand(INSERT_LINK_PREVIEW_COMMAND, { url: linkUrl });
+                            }}
+                        ><TbCards></TbCards></div>
                     </div>
                 </div>
             )}
