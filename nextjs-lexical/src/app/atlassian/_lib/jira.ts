@@ -6,9 +6,9 @@ import path from 'path';
 // JIRA APIのベースURL
 const baseUrl = process.env.JIRA_BASE_API_URL;
 // JIRAのAPIトークン
-const apiToken = process.env.JIRA_API_TOKEN;
+const apiToken = process.env.ATLASSIAN_API_TOKEN;
 // JIRAアカウントのメールアドレス
-const email = process.env.JIRA_EMAIL
+const email = process.env.ATLASSIAN_ACCOUNT_EMAIL
 // 対象のJIRAプロジェクトのキー
 const projectKeys = process.env.JIRA_PROJECT_KEYS ? process.env.JIRA_PROJECT_KEYS.split(',') : []
 

@@ -23,9 +23,9 @@ interface Page {
 // JIRA APIのベースURL
 const baseUrl = process.env.CONFLUENCE_BASE_API_URL;
 // JIRAのAPIトークン
-const apiToken = process.env.JIRA_API_TOKEN;
+const apiToken = process.env.ATLASSIAN_API_TOKEN;
 // JIRAアカウントのメールアドレス
-const email = process.env.JIRA_EMAIL
+const email = process.env.ATLASSIAN_ACCOUNT_EMAIL
 // 対象のコンフルエンスのキー
 const spaceKeys: string[] = process.env.CONFLUENCE_SPACE_KEYS ? process.env.CONFLUENCE_SPACE_KEYS.split(',') : []
 
