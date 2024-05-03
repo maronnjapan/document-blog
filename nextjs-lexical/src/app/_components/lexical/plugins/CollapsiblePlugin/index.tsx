@@ -55,6 +55,7 @@ export default function CollapsiblePlugin(): null {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
+        // 使用可能なノードとして登録されていなければエラーを発生させる
         if (
             !editor.hasNodes([
                 CollapsibleContainerNode,

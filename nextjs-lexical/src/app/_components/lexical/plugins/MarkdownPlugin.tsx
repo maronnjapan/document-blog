@@ -73,7 +73,7 @@ export const COLLAPSIBLE: ElementTransformer = {
 
 export const LINK_CARD: TextMatchTransformer = {
   dependencies: [LinkPreviewNode],
-  export: (node, exportChildren, exportFormat) => {
+  export: (node) => {
     if (!$isLinkPreviewNode(node)) {
       return null;
     }

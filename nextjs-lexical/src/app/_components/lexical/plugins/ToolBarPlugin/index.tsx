@@ -14,9 +14,10 @@ import {
 } from '@lexical/list';
 import { $setBlocksType } from "@lexical/selection";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TbChecklist, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbUpload } from "react-icons/tb";
+import { TbChecklist, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbSquareToggle, TbUpload } from "react-icons/tb";
 import { CODE_LANGUAGE_COMMAND } from "../CodeHighlightPlugin";
 import { INSERT_IMAGE_COMMAND } from "../InserImagePlugin/command";
+import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 
 const HeadingBlocks: { [key in HeadingTagType]: string } = {
     h1: "Heading 1",
@@ -37,6 +38,7 @@ const SupportedBlocks = {
     paragraph: "Paragraph",
     quote: "Quote",
     code: "Code Block",
+    collapse: "Toggle",
     file: "Upload File"
 } as const;
 type BlockType = keyof typeof SupportedBlocks;
@@ -128,6 +130,12 @@ export default function ToolBarPlugin() {
     const formatCheckList = useCallback(() => {
         if (blockType !== "check") {
             editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
+        }
+    }, [blockType, editor]);
+
+    const formatToggle = useCallback(() => {
+        if (blockType !== "collapse") {
+            editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined)
         }
     }, [blockType, editor]);
 
@@ -240,6 +248,16 @@ export default function ToolBarPlugin() {
                 onClick={() => formatCodeHightlight()}
             >
                 <TbCode />
+            </button>
+            <button
+                type="button"
+                role="checkbox"
+                title={SupportedBlocks['collapse']}
+                aria-label={SupportedBlocks['collapse']}
+                aria-checked={blockType === 'collapse'}
+                onClick={() => formatToggle()}
+            >
+                <TbSquareToggle />
             </button>
             <button
                 type="button"

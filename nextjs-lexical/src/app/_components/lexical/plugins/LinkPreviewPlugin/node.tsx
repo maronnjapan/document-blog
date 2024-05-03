@@ -20,26 +20,31 @@ const LinkPreview = ({ url, nodeKey }: { url: string, nodeKey: NodeKey }) => {
 
             </iframe>
         </BlockWithAlignableContents>
+
     )
 }
 
 export interface LinkPreviewPayload {
     url: string;
     key?: NodeKey
+    caption?: LexicalEditor;
 }
 const linkType = 'link-preview'
 type LinkPreviewAttributes = {
     url: string,
+    caption: SerializedEditor
 }
 
 type SerializedLinkPreviewNode = Spread<LinkPreviewAttributes, SerializedDecoratorBlockNode>
 
 export class LinkPreviewNode extends DecoratorBlockNode {
     _url: string;
+    _caption: LexicalEditor;
 
     exportJSON(): SerializedLinkPreviewNode {
         return {
             ...super.exportJSON(),
+            caption: this._caption.toJSON(),
             url: this._url,
             type: 'link-preview',
             version: 1
@@ -50,9 +55,10 @@ export class LinkPreviewNode extends DecoratorBlockNode {
         return 'link-preview'
     }
 
-    constructor(url: string, format?: ElementFormatType, key?: NodeKey) {
+    constructor(url: string, caption?: LexicalEditor, format?: ElementFormatType, key?: NodeKey) {
         super(format, key)
         this._url = url;
+        this._caption = caption || createEditor();
     }
 
     static clone(node: LinkPreviewNode): LinkPreviewNode {
@@ -75,14 +81,14 @@ export class LinkPreviewNode extends DecoratorBlockNode {
 
 
     static importJSON(_serializedNode: SerializedLinkPreviewNode): LinkPreviewNode {
-        const { url } = _serializedNode
+        const { url, caption } = _serializedNode
         const node = $createLinkPreviewNode({ url });
         return node;
     }
 }
 
 export function $createLinkPreviewNode(payload: LinkPreviewPayload): LinkPreviewNode {
-    return $applyNodeReplacement(new LinkPreviewNode(payload.url))
+    return $applyNodeReplacement(new LinkPreviewNode(payload.url, payload.caption))
 }
 
 export function $isLinkPreviewNode(node?: LexicalNode): node is LinkPreviewNode {

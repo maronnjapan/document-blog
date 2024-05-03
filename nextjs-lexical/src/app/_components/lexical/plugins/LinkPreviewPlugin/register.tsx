@@ -3,8 +3,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { useEffect } from "react";
 import { $createLinkPreviewNode, LinkPreviewNode, LinkPreviewPayload } from "./node";
 import { INSERT_LINK_PREVIEW_COMMAND } from "./command";
-import { $insertNodeToNearestRoot, } from '@lexical/utils';
-import { $getSelection, $insertNodes, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
+import { $createTextNode, $getSelection, $insertNodes, $isRangeSelection, $isRootOrShadowRoot, COMMAND_PRIORITY_EDITOR } from "lexical";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import {
     $isAutoLinkNode,
@@ -24,10 +23,14 @@ const LinkPreviewRegister = () => {
                 const selection = $getSelection();
                 if ($isRangeSelection(selection)) {
                     const parent = getSelectedNode(selection).getParent();
+                    const node = $createLinkPreviewNode(payload);
+
                     if ($isAutoLinkNode(parent)) {
-                        parent.remove();
-                        const node = $createLinkPreviewNode(payload);
-                        $insertNodes([node]);
+                        parent.remove()
+                        const markdownText = `@[linkCard](${payload.url})`;
+                        const linkCardMarkdownText = $createTextNode(markdownText);
+                        linkCardMarkdownText.setStyle('display:none;')
+                        $insertNodes([node, linkCardMarkdownText]);
                     }
                 }
                 return true;
