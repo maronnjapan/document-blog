@@ -27,6 +27,7 @@ import LinkPreviewPlugin from "./plugins/LinkPreviewPlugin";
 import { ImageRegister } from "./plugins/InserImagePlugin/register";
 import ClipboardImageHandler from "./plugins/InserImagePlugin/clipboard-handler";
 import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
+import MessagePlugin from "./plugins/MessagePlugin";
 
 const initialConfig: ComponentProps<typeof LexicalComposer>["initialConfig"] = {
     namespace: "MyEditor",
@@ -75,6 +76,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
             <ImageRegister />
             <CollapsiblePlugin></CollapsiblePlugin>
             <ClipboardImageHandler></ClipboardImageHandler>
+            <MessagePlugin></MessagePlugin>
             {!!floatingAnchorElem && <>
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} isLinkEditMode={isLinkEditMode} setIsLinkEditMode={setIsLinkEditMode}></FloatingLinkEditorPlugin>
                 <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem}></FloatingTextFormatToolbarPlugin>

@@ -14,10 +14,14 @@ import {
 } from '@lexical/list';
 import { $setBlocksType } from "@lexical/selection";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TbChecklist, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbSquareToggle, TbUpload } from "react-icons/tb";
+import { TbAlertCircle, TbChecklist, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbSquareToggle, TbUpload } from "react-icons/tb";
 import { CODE_LANGUAGE_COMMAND } from "../CodeHighlightPlugin";
 import { INSERT_IMAGE_COMMAND } from "../InserImagePlugin/command";
 import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
+import { INSERT_MESSEAGE_COMMAND } from "../MessagePlugin";
+import { $createMessageContentNode, $isMessageContentNode } from "../MessagePlugin/content-node";
+import { $isCollapsibleContainerNode } from "../CollapsiblePlugin/container-node";
+import { $isCollapsibleContentNode } from "../CollapsiblePlugin/content-node";
 
 const HeadingBlocks: { [key in HeadingTagType]: string } = {
     h1: "Heading 1",
@@ -39,6 +43,7 @@ const SupportedBlocks = {
     quote: "Quote",
     code: "Code Block",
     collapse: "Toggle",
+    message: "Message",
     file: "Upload File"
 } as const;
 type BlockType = keyof typeof SupportedBlocks;
@@ -75,6 +80,8 @@ export default function ToolBarPlugin() {
                     setBlockType('code')
                     return setCodeLanguage(targetNode.getLanguage() ?? '')
                 }
+                if ($isCollapsibleContainerNode(targetNode) || $isCollapsibleContentNode(targetNode.getParent())) return setBlockType('collapse')
+                if ($isMessageContentNode(targetNode)) return setBlockType('message')
                 const supportedBlockTypes = convertPropertiesToUnionList(SupportedBlocks);
                 const targetKey = supportedBlockTypes.find(type => type === targetNode.getKey())
                 setBlockType(targetKey ?? 'paragraph');
@@ -136,6 +143,17 @@ export default function ToolBarPlugin() {
     const formatToggle = useCallback(() => {
         if (blockType !== "collapse") {
             editor.dispatchCommand(INSERT_COLLAPSIBLE_COMMAND, undefined)
+        }
+    }, [blockType, editor]);
+
+    const formatMessage = useCallback(() => {
+        if (blockType !== "message") {
+            editor.update(() => {
+                const selection = $getSelection();
+                if ($isRangeSelection(selection)) {
+                    $setBlocksType(selection, () => $createMessageContentNode(''));
+                }
+            });
         }
     }, [blockType, editor]);
 
@@ -258,6 +276,16 @@ export default function ToolBarPlugin() {
                 onClick={() => formatToggle()}
             >
                 <TbSquareToggle />
+            </button>
+            <button
+                type="button"
+                role="checkbox"
+                title={SupportedBlocks['message']}
+                aria-label={SupportedBlocks['message']}
+                aria-checked={blockType === 'message'}
+                onClick={() => formatMessage()}
+            >
+                <TbAlertCircle />
             </button>
             <button
                 type="button"

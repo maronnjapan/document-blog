@@ -4,8 +4,11 @@ import { $createImageNode, $isImageNode, ImageNode } from "./InserImagePlugin/no
 import { $createCollapsibleContainerNode, $isCollapsibleContainerNode, CollapsibleContainerNode } from "./CollapsiblePlugin/container-node";
 import { $createCollapsibleContentNode, $isCollapsibleContentNode, CollapsibleContentNode } from "./CollapsiblePlugin/content-node";
 import { $createCollapsibleTitleNode, $isCollapsibleTitleNode, CollapsibleTitleNode } from "./CollapsiblePlugin/title-node";
-import { $createParagraphNode, $createTextNode, $isParagraphNode, ElementNode, LexicalNode } from "lexical";
+import { $createParagraphNode, $createTextNode, $isParagraphNode, $isTextNode, ElementNode, LexicalNode } from "lexical";
 import { $createLinkPreviewNode, $isLinkPreviewNode, LinkPreviewNode } from "./LinkPreviewPlugin/node";
+import { $createMessageContainerNode, $isMessageContainerNode, MessageContainerNode } from "./MessagePlugin/container-node";
+import { $createMessageContentNode, $isMessageContentNode, MessageContentNode, MessageTypes } from "./MessagePlugin/content-node";
+import { Permutation } from "@/libs/utility-types";
 
 export const IMAGE: TextMatchTransformer = {
   dependencies: [ImageNode],
@@ -49,25 +52,53 @@ export const COLLAPSIBLE: ElementTransformer = {
   },
   replace: (parentNode: ElementNode, children: LexicalNode[], match) => {
     const [all, title, content] = match;
-    const collapsibleContainer = $createCollapsibleContainerNode(true);
-    const collapsibleTitle = $createCollapsibleTitleNode().append($createTextNode(all.replace(':::details ', '').trim()));
-    const collapsibleContent = $createCollapsibleContentNode().append($createParagraphNode())
+    const messageContainer = $createCollapsibleContainerNode(true);
+    const messageTitle = $createCollapsibleTitleNode().append($createTextNode(all.replace(':::details ', '').trim()));
+    const messageContent = $createCollapsibleContentNode().append($createParagraphNode())
 
-    // childrenをParagraphNodeにラップしてcollapsibleContentに追加
+    // childrenをParagraphNodeにラップしてmessageContentに追加
     children.forEach((child) => {
       if ($isParagraphNode(child)) {
-        collapsibleContent.append(child);
+        messageContent.append(child);
       } else {
         const paragraphNode = $createParagraphNode();
         paragraphNode.append(child);
-        collapsibleContent.append(paragraphNode);
+        messageContent.append(paragraphNode);
       }
     });
 
-    collapsibleContainer.append(collapsibleTitle, collapsibleContent);
-    parentNode.replace(collapsibleContainer);
+    messageContainer.append(messageTitle, messageContent);
+    parentNode.replace(messageContainer);
   },
   regExp: /^[ \t]*:::details [\s\S]+(\w{1,10})?\s/,
+  type: 'element',
+};
+
+export const MESSAGE: ElementTransformer = {
+  dependencies: [MessageContainerNode, MessageContentNode],
+  export: (node, exportChildren: (node: ElementNode) => string) => {
+
+    if (!$isMessageContentNode(node)) {
+      return null;
+    }
+    return ':::message ' + node.getMessageType() + '\n' + node.getTextContent() + '\n:::';
+  },
+  replace: (parentNode: ElementNode, children: LexicalNode[], match) => {
+    const [all] = match
+    console.log(all)
+
+    const trimMathcText = all.replace(':::message ', '').trim();
+    const messageTypes: Permutation<MessageTypes> = ['alert', 'warning', '']
+
+    const targetMessageType = messageTypes.find(type => type === trimMathcText);
+    if (!targetMessageType) {
+      return null;
+    }
+    const messageContent = $createMessageContentNode(targetMessageType)
+
+    parentNode.replace(messageContent);
+  },
+  regExp: /^[ \t]*:::message (\s|alert|warning)\s/,
   type: 'element',
 };
 
@@ -92,7 +123,7 @@ export const LINK_CARD: TextMatchTransformer = {
 };
 
 
-export const TRANSFORMER_PATTERNS = [IMAGE, COLLAPSIBLE, LINK_CARD, ...TRANSFORMERS]
+export const TRANSFORMER_PATTERNS = [IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, ...TRANSFORMERS]
 
 export const MarkdownPlugin = () => {
   return <MarkdownShortcutPlugin transformers={TRANSFORMER_PATTERNS}></MarkdownShortcutPlugin>;

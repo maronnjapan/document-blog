@@ -1,0 +1,61 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ *
+ */
+.Message__container {
+  background: #fcfcfc;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.Message__container[open] > .Message__title:before {
+  border-color: transparent;
+  border-width: 6px 4px 0 4px;
+  border-top-color: #000;
+}
+
+.Message__content {
+  padding: 0 5px 5px 30px;
+  background: #e9f2ff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.Message__content_alert {
+  background: #ffeff2;
+}
+
+.Message__content_warning {
+  background: #fff6e4;
+}
+
+.Message__content:before {
+  content: "!";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1d7afc;
+  color: #fff;
+  font-weight: bold;
+}
+
+.Message__content_alert:before {
+  background-color: #ff7670;
+}
+
+.Message__content_warning:before {
+  background-color: #ffb84c;
+}
