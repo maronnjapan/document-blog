@@ -121,7 +121,29 @@ export const LINK_CARD: TextMatchTransformer = {
   type: 'text-match',
 };
 
-export const TRANSFORMER_PATTERNS = [IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, ...TRANSFORMERS]
+export const TABLE: TextMatchTransformer = {
+  dependencies: [TableNode, TableRowNode, TableCellNode],
+  export: (node) => {
+    const parent = node.getParent()
+    if (!$isTableNode(parent)) {
+      return null;
+    }
+
+    const separate = ' | ';
+    const tableItems = node.getTextContent().split('\n').map((val, index) => index % 2 === 1 ? ' | ' : `${val}`);
+    const headerMarkdown = !node.getPreviousSibling() ? `| ${[...Array(tableItems.filter(i => i !== separate).length)].map(() => '----').join(separate)} |\n` : ''
+
+    return `| ${tableItems.join('')} |\n${headerMarkdown}`
+  },
+  // 変換用に使用したいだけなので、ここから下の処理は使用していない
+  replace: () => { },
+  importRegExp: /[\s\S]*/,
+  regExp: /[\s\S]*/,
+  trigger: '',
+  type: 'text-match',
+};
+
+export const TRANSFORMER_PATTERNS = [IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
 
 export const MarkdownPlugin = () => {
   return <MarkdownShortcutPlugin transformers={TRANSFORMER_PATTERNS}></MarkdownShortcutPlugin>;

@@ -299,22 +299,34 @@ export default function ToolBarPlugin() {
             >
                 <TbSquareToggle />
             </button>
-            <div className="relative">
+            <div className="flex">
                 <button
                     type="button"
                     role="checkbox"
                     title={SupportedBlocks['message']}
                     aria-label={SupportedBlocks['message']}
                     aria-checked={blockType === 'message'}
-                    onClick={() => setIsShowMessageInsertElm(prev => !prev)}
+                    onClick={() => formatMessage('')}
                 >
                     <TbAlertCircle />
-                    <TbChevronDown />
                 </button>
-                <div className={`absolute border rounded top-full z-20 bg-white w-28 ${isShowMessageInsertElm ? '' : 'hidden'}`} >
-                    <button onClick={() => clickInsertMessageSelect('')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Normal</span></button>
-                    <button onClick={() => clickInsertMessageSelect('warning')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Warning</span></button>
-                    <button onClick={() => clickInsertMessageSelect('alert')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Alert</span></button>
+                <div className="relative">
+                    <button
+                        type="button"
+                        role="checkbox"
+                        title={SupportedBlocks['message']}
+                        aria-label={SupportedBlocks['message']}
+                        aria-checked={blockType === 'message'}
+                        onClick={() => setIsShowMessageInsertElm(prev => !prev)}
+                        className={`w-4 ${blockType !== 'message' ? '' : 'hidden'}`}
+                    >
+                        <TbChevronDown />
+                    </button>
+                    <div className={`absolute border rounded top-full z-20 bg-white w-28 ${isShowMessageInsertElm ? '' : 'hidden'}`} onMouseLeave={() => setIsShowMessageInsertElm(() => false)}>
+                        <button onClick={() => clickInsertMessageSelect('')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Normal</span></button>
+                        <button onClick={() => clickInsertMessageSelect('warning')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Warning</span></button>
+                        <button onClick={() => clickInsertMessageSelect('alert')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Alert</span></button>
+                    </div>
                 </div>
             </div>
             <div className="flex">
@@ -340,13 +352,14 @@ export default function ToolBarPlugin() {
                     >
                         <TbChevronDown />
                     </button>
-                    <div className={`absolute top-full z-10 ${isShowTableInsertElm ? '' : 'hidden'}`}
+                    <div className={`absolute top-full z-20 ${isShowTableInsertElm ? '' : 'hidden'}`}
                         onClick={() => setIsShowTableInsertElm(() => false)}
                         onKeyDown={(event) => {
                             if (event.key === 'Enter') {
                                 setIsShowTableInsertElm(() => false)
                             }
                         }}
+                        onMouseLeave={() => setIsShowTableInsertElm(() => false)}
                     >
                         <SelectTableCells key={`${isShowTableInsertElm}`} blockType={blockType}></SelectTableCells>
 
