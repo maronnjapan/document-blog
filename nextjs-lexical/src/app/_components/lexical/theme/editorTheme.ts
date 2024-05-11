@@ -1,6 +1,10 @@
 import { EditorThemeClasses } from "lexical";
 import styles from "../styles/EditorTheme.module.css";
 
+
+const tableTailwindClasses = 'border-2 max-w-4xl w-full';
+const tableHeaderTailwindClasses = 'border-2 bg-slate-100 w-20'
+const tableBodyTailwindClasses = 'border-2 w-20'
 export const theme: EditorThemeClasses = {
     heading: {
         h1: styles.h1,
@@ -64,5 +68,8 @@ export const theme: EditorThemeClasses = {
         underline: styles.textUnderline,
         underlineStrikethrough: styles.textUnderlineStrikethrough,
     },
-    link: styles.link
+    link: styles.link,
+    table: tableTailwindClasses,
+    tableCellHeader: tableHeaderTailwindClasses,
+    tableCell: tableBodyTailwindClasses
 };

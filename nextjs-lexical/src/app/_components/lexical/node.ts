@@ -8,7 +8,7 @@ import { ImageNode } from "./plugins/InserImagePlugin/node";
 import { CollapsibleContainerNode } from "./plugins/CollapsiblePlugin/container-node";
 import { CollapsibleContentNode } from "./plugins/CollapsiblePlugin/content-node";
 import { CollapsibleTitleNode } from "./plugins/CollapsiblePlugin/title-node";
-import { MessageContainerNode } from "./plugins/MessagePlugin/container-node";
 import { MessageContentNode } from "./plugins/MessagePlugin/content-node";
+import { TableNode, TableCellNode, TableRowNode } from '@lexical/table'
 
-export const nodes: Klass<LexicalNode>[] = [HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, CodeHighlightNode, LinkNode, AutoLinkNode, ImageNode, LinkPreviewNode, CollapsibleContainerNode, CollapsibleContentNode, CollapsibleTitleNode, MessageContainerNode, MessageContentNode]
+export const nodes: Klass<LexicalNode>[] = [HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, CodeHighlightNode, LinkNode, AutoLinkNode, ImageNode, LinkPreviewNode, CollapsibleContainerNode, CollapsibleContentNode, CollapsibleTitleNode, MessageContentNode, TableNode, TableCellNode, TableRowNode]

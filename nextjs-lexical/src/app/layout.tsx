@@ -2,6 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import 'ress'
+import '../global.css'
 import SideMenu from "./_components/menu/SideMenu";
 import Layout from "./_components/layout/Layout";
 

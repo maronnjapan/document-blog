@@ -4,11 +4,11 @@ import { $createImageNode, $isImageNode, ImageNode } from "./InserImagePlugin/no
 import { $createCollapsibleContainerNode, $isCollapsibleContainerNode, CollapsibleContainerNode } from "./CollapsiblePlugin/container-node";
 import { $createCollapsibleContentNode, $isCollapsibleContentNode, CollapsibleContentNode } from "./CollapsiblePlugin/content-node";
 import { $createCollapsibleTitleNode, $isCollapsibleTitleNode, CollapsibleTitleNode } from "./CollapsiblePlugin/title-node";
-import { $createParagraphNode, $createTextNode, $isParagraphNode, $isTextNode, ElementNode, LexicalNode } from "lexical";
+import { $createParagraphNode, $createTextNode, $isParagraphNode, $isTabNode, $isTextNode, ElementNode, LexicalNode } from "lexical";
 import { $createLinkPreviewNode, $isLinkPreviewNode, LinkPreviewNode } from "./LinkPreviewPlugin/node";
-import { $createMessageContainerNode, $isMessageContainerNode, MessageContainerNode } from "./MessagePlugin/container-node";
 import { $createMessageContentNode, $isMessageContentNode, MessageContentNode, MessageTypes } from "./MessagePlugin/content-node";
 import { Permutation } from "@/libs/utility-types";
+import { TableNode, TableCellNode, TableRowNode, $isTableCellNode, $isTableRowNode, $isTableNode } from '@lexical/table'
 
 export const IMAGE: TextMatchTransformer = {
   dependencies: [ImageNode],
@@ -75,7 +75,7 @@ export const COLLAPSIBLE: ElementTransformer = {
 };
 
 export const MESSAGE: ElementTransformer = {
-  dependencies: [MessageContainerNode, MessageContentNode],
+  dependencies: [MessageContentNode],
   export: (node, exportChildren: (node: ElementNode) => string) => {
 
     if (!$isMessageContentNode(node)) {
@@ -85,7 +85,6 @@ export const MESSAGE: ElementTransformer = {
   },
   replace: (parentNode: ElementNode, children: LexicalNode[], match) => {
     const [all] = match
-    console.log(all)
 
     const trimMathcText = all.replace(':::message ', '').trim();
     const messageTypes: Permutation<MessageTypes> = ['alert', 'warning', '']
@@ -121,7 +120,6 @@ export const LINK_CARD: TextMatchTransformer = {
   trigger: ')',
   type: 'text-match',
 };
-
 
 export const TRANSFORMER_PATTERNS = [IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, ...TRANSFORMERS]
 

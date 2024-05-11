@@ -28,6 +28,7 @@ import { ImageRegister } from "./plugins/InserImagePlugin/register";
 import ClipboardImageHandler from "./plugins/InserImagePlugin/clipboard-handler";
 import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
 import MessagePlugin from "./plugins/MessagePlugin";
+import TablePlugin from "./plugins/TablePlugin";
 
 const initialConfig: ComponentProps<typeof LexicalComposer>["initialConfig"] = {
     namespace: "MyEditor",
@@ -49,7 +50,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-            <div className={styles.editorContainer}>
+            <div className={`${styles.editorContainer}`}>
                 <div><AutoSavePlugin postId={postId}></AutoSavePlugin></div>
                 <ToolBarPlugin></ToolBarPlugin>
 
@@ -64,6 +65,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
             <AutoFocusPlugin></AutoFocusPlugin>
             <HistoryPlugin />
             <ListPlugin></ListPlugin>
+            <TablePlugin></TablePlugin>
             <CheckListPlugin />
             <MarkdownPlugin></MarkdownPlugin>
             <CodeHighlightPlugin></CodeHighlightPlugin>

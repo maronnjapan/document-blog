@@ -1,7 +1,7 @@
 'use client';
 import styles from "./styles/Toolbar.module.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, TextNode, ElementNode } from "lexical";
+import { $getSelection, $insertNodes, $isRangeSelection } from "lexical";
 import { $createCodeNode, CODE_LANGUAGE_FRIENDLY_NAME_MAP, $isCodeNode } from "@lexical/code";
 import { $createHeadingNode, $createQuoteNode, HeadingTagType, $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
 import {
@@ -14,14 +14,15 @@ import {
 } from '@lexical/list';
 import { $setBlocksType } from "@lexical/selection";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TbAlertCircle, TbChecklist, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbSquareToggle, TbUpload } from "react-icons/tb";
+import { TbAlertCircle, TbChecklist, TbChevronDown, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbSquareToggle, TbTable } from "react-icons/tb";
 import { CODE_LANGUAGE_COMMAND } from "../CodeHighlightPlugin";
 import { INSERT_IMAGE_COMMAND } from "../InserImagePlugin/command";
 import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
-import { INSERT_MESSEAGE_COMMAND } from "../MessagePlugin";
-import { $createMessageContentNode, $isMessageContentNode } from "../MessagePlugin/content-node";
+import { $createMessageContentNode, $isMessageContentNode, MessageTypes } from "../MessagePlugin/content-node";
 import { $isCollapsibleContainerNode } from "../CollapsiblePlugin/container-node";
 import { $isCollapsibleContentNode } from "../CollapsiblePlugin/content-node";
+import { INSERT_TABLE_COMMAND, $isTableRowNode, $isTableCellNode } from '@lexical/table'
+import SelectTableCells from "./SelectTableCells";
 
 const HeadingBlocks: { [key in HeadingTagType]: string } = {
     h1: "Heading 1",
@@ -36,6 +37,7 @@ const ListBlocks: { [key in ListType]: string } = {
     bullet: 'Bullet List',
     check: 'Check List',
 }
+
 const SupportedBlocks = {
     ...HeadingBlocks,
     ...ListBlocks,
@@ -44,9 +46,10 @@ const SupportedBlocks = {
     code: "Code Block",
     collapse: "Toggle",
     message: "Message",
-    file: "Upload File"
+    file: "Upload File",
+    table: "table"
 } as const;
-type BlockType = keyof typeof SupportedBlocks;
+export type BlockType = keyof typeof SupportedBlocks;
 
 const convertPropertiesToUnionList = <T extends { [key in string]: unknown }>(object: T): (keyof T)[] => Object.keys(object)
 
@@ -59,6 +62,11 @@ export default function ToolBarPlugin() {
     const [codeLanguage, setCodeLanguage] = useState('');
     const [editor] = useLexicalComposerContext();
     const fileInput = useRef<HTMLInputElement>(null)
+    const [isShowTableInsertElm, setIsShowTableInsertElm] = useState(false);
+    const [isShowMessageInsertElm, setIsShowMessageInsertElm] = useState(false);
+
+    // classNameに書くとTailwindの補完が効いてしまうので、外だし。
+    const isShowTableInsertButton = blockType !== 'table'
 
     useEffect(() => {
         return editor.registerUpdateListener(({ editorState }) => {
@@ -82,6 +90,7 @@ export default function ToolBarPlugin() {
                 }
                 if ($isCollapsibleContainerNode(targetNode) || $isCollapsibleContentNode(targetNode.getParent())) return setBlockType('collapse')
                 if ($isMessageContentNode(targetNode)) return setBlockType('message')
+                if ($isTableCellNode(targetNode.getParent()) || $isTableRowNode(targetNode.getParent())) return setBlockType('table');
                 const supportedBlockTypes = convertPropertiesToUnionList(SupportedBlocks);
                 const targetKey = supportedBlockTypes.find(type => type === targetNode.getKey())
                 setBlockType(targetKey ?? 'paragraph');
@@ -146,13 +155,26 @@ export default function ToolBarPlugin() {
         }
     }, [blockType, editor]);
 
-    const formatMessage = useCallback(() => {
+    const formatMessage = useCallback((messageType: MessageTypes) => {
         if (blockType !== "message") {
             editor.update(() => {
                 const selection = $getSelection();
                 if ($isRangeSelection(selection)) {
-                    $setBlocksType(selection, () => $createMessageContentNode(''));
+                    console.log(messageType)
+                    $setBlocksType(selection, () => $createMessageContentNode(messageType));
                 }
+            });
+        }
+    }, [blockType, editor]);
+    const clickInsertMessageSelect = (messageType: MessageTypes) => {
+        formatMessage(messageType)
+        setIsShowMessageInsertElm(() => false)
+    }
+
+    const formatTable = useCallback(() => {
+        if (blockType !== "table") {
+            editor.update(() => {
+                editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: '3', rows: '3' })
             });
         }
     }, [blockType, editor]);
@@ -277,16 +299,60 @@ export default function ToolBarPlugin() {
             >
                 <TbSquareToggle />
             </button>
-            <button
-                type="button"
-                role="checkbox"
-                title={SupportedBlocks['message']}
-                aria-label={SupportedBlocks['message']}
-                aria-checked={blockType === 'message'}
-                onClick={() => formatMessage()}
-            >
-                <TbAlertCircle />
-            </button>
+            <div className="relative">
+                <button
+                    type="button"
+                    role="checkbox"
+                    title={SupportedBlocks['message']}
+                    aria-label={SupportedBlocks['message']}
+                    aria-checked={blockType === 'message'}
+                    onClick={() => setIsShowMessageInsertElm(prev => !prev)}
+                >
+                    <TbAlertCircle />
+                    <TbChevronDown />
+                </button>
+                <div className={`absolute border rounded top-full z-20 bg-white w-28 ${isShowMessageInsertElm ? '' : 'hidden'}`} >
+                    <button onClick={() => clickInsertMessageSelect('')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Normal</span></button>
+                    <button onClick={() => clickInsertMessageSelect('warning')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Warning</span></button>
+                    <button onClick={() => clickInsertMessageSelect('alert')} className="p-2 cursor-pointer hover:bg-blue-200 flex items-center justify-center w-full"><span className="text-black text-xs">Alert</span></button>
+                </div>
+            </div>
+            <div className="flex">
+                <button
+                    type="button"
+                    role="checkbox"
+                    title={SupportedBlocks['table']}
+                    aria-label={SupportedBlocks['table']}
+                    aria-checked={blockType === 'table'}
+                    onClick={() => formatTable()}
+                >
+                    <TbTable />
+                </button>
+                <div className="relative">
+                    <button
+                        type="button"
+                        role="checkbox"
+                        title={SupportedBlocks['table']}
+                        aria-label={SupportedBlocks['table']}
+                        aria-checked={blockType === 'table'}
+                        onClick={() => setIsShowTableInsertElm((prev) => !prev)}
+                        className={`w-4 ${isShowTableInsertButton ? '' : 'hidden'}`}
+                    >
+                        <TbChevronDown />
+                    </button>
+                    <div className={`absolute top-full z-10 ${isShowTableInsertElm ? '' : 'hidden'}`}
+                        onClick={() => setIsShowTableInsertElm(() => false)}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                setIsShowTableInsertElm(() => false)
+                            }
+                        }}
+                    >
+                        <SelectTableCells key={`${isShowTableInsertElm}`} blockType={blockType}></SelectTableCells>
+
+                    </div>
+                </div>
+            </div>
             <button
                 type="button"
                 role="checkbox"
