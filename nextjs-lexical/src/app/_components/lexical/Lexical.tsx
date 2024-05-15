@@ -65,7 +65,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
             <AutoFocusPlugin></AutoFocusPlugin>
             <HistoryPlugin />
             <ListPlugin></ListPlugin>
-            <TablePlugin></TablePlugin>
+            <TablePlugin anchorElm={floatingAnchorElem}></TablePlugin>
             <CheckListPlugin />
             <MarkdownPlugin></MarkdownPlugin>
             <CodeHighlightPlugin></CodeHighlightPlugin>

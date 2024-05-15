@@ -381,5 +381,6 @@ export default function FloatingTextFormatToolbarPlugin({
     anchorElem?: HTMLElement;
 }): JSX.Element | null {
     const [editor] = useLexicalComposerContext();
+    console.log(anchorElem.getBoundingClientRect())
     return useFloatingTextFormatToolbar(editor, anchorElem);
 }

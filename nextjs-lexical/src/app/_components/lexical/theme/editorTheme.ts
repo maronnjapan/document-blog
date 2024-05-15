@@ -5,6 +5,8 @@ import styles from "../styles/EditorTheme.module.css";
 const tableTailwindClasses = 'border-2 max-w-4xl w-full';
 const tableHeaderTailwindClasses = 'border-2 bg-slate-100 w-20'
 const tableBodyTailwindClasses = 'border-2 w-20'
+const ulTailwindClasses = 'list-disc'
+const olTailwindClasses = 'list-decimal'
 export const theme: EditorThemeClasses = {
     heading: {
         h1: styles.h1,
@@ -16,8 +18,8 @@ export const theme: EditorThemeClasses = {
     },
     quote: styles.quote,
     list: {
-        ul: styles.ul,
-        ol: styles.ol,
+        ul: `${styles.ul} ${ulTailwindClasses}`,
+        ol: `${styles.ol} ${olTailwindClasses}`,
         listitem: styles.listitem,
         nested: {
             listitem: styles.nestedListItem,

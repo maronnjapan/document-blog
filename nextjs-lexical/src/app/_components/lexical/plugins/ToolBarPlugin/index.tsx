@@ -160,7 +160,6 @@ export default function ToolBarPlugin() {
             editor.update(() => {
                 const selection = $getSelection();
                 if ($isRangeSelection(selection)) {
-                    console.log(messageType)
                     $setBlocksType(selection, () => $createMessageContentNode(messageType));
                 }
             });
