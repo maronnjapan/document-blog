@@ -22,7 +22,7 @@ export default function EmbedExternalSystemPlugin() {
 
                 if ($isTweetUrl(url) && tweetId) {
                     node.remove()
-                    $insertNodes([$createTweetNode(tweetId), $createParagraphNode()])
+                    $insertNodes([$createTweetNode(tweetId, url), $createParagraphNode()])
                     return;
                 }
 

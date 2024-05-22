@@ -1,9 +1,9 @@
 
-const tweetRegex = /^https?:\/\/(?:www\.)?twitter\.com\/(?:#!\/)?(?:\w+)\/status(?:es)?\/(\d+)$/i;
+const tweetRegex = /^https?:\/\/(?:www\.)?(twitter|x)\.com\/(?:#!\/)?(?:\w+)\/status(?:es)?\/(\d+)$/i;
 export const $isTweetUrl = (url: string) => tweetRegex.test(url)
 export const $getTweetId = (url: string) => {
     const match = url.match(tweetRegex);
-    return match ? match[1] : null;
+    return match ? match[2] : null;
 }
 
 const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?(?:embed\/)?(?:v\/)?(?:shorts\/)?(?:\S+)?(\S{11})(?:\S+)?$/i;

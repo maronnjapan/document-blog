@@ -42,11 +42,12 @@ type TweetComponentProps = Readonly<{
 }>;
 
 function convertTweetElement(
-    domNode: HTMLDivElement,
+    domNode: HTMLDivElement
 ): DOMConversionOutput | null {
     const id = domNode.getAttribute('data-lexical-tweet-id');
-    if (id) {
-        const node = $createTweetNode(id);
+    const url = domNode.getAttribute('data-lexical-tweet-url')
+    if (id && url) {
+        const node = $createTweetNode(id, url);
         return { node };
     }
     return null;
@@ -126,23 +127,25 @@ function TweetComponent({
 export type SerializedTweetNode = Spread<
     {
         id: string;
+        url: string;
     },
     SerializedDecoratorBlockNode
 >;
 
 export class TweetNode extends DecoratorBlockNode {
     __id: string;
+    __url: string;
 
     static getType(): string {
         return 'tweet';
     }
 
     static clone(node: TweetNode): TweetNode {
-        return new TweetNode(node.__id, node.__format, node.__key);
+        return new TweetNode(node.__id, node.__url, node.__format, node.__key);
     }
 
     static importJSON(serializedNode: SerializedTweetNode): TweetNode {
-        const node = $createTweetNode(serializedNode.id);
+        const node = $createTweetNode(serializedNode.id, serializedNode.url);
         node.setFormat(serializedNode.format);
         return node;
     }
@@ -151,6 +154,7 @@ export class TweetNode extends DecoratorBlockNode {
         return {
             ...super.exportJSON(),
             id: this.getId(),
+            url: this.getUrl(),
             type: 'tweet',
             version: 1,
         };
@@ -173,18 +177,24 @@ export class TweetNode extends DecoratorBlockNode {
     exportDOM(): DOMExportOutput {
         const element = document.createElement('div');
         element.setAttribute('data-lexical-tweet-id', this.__id);
+        element.setAttribute('data-lexical-tweet-url', this.__url);
         const text = document.createTextNode(this.getTextContent());
         element.append(text);
         return { element };
     }
 
-    constructor(id: string, format?: ElementFormatType, key?: NodeKey) {
+    constructor(id: string, url: string, format?: ElementFormatType, key?: NodeKey) {
         super(format, key);
         this.__id = id;
+        this.__url = url;
     }
 
     getId(): string {
         return this.__id;
+    }
+
+    getUrl() {
+        return this.__url
     }
 
     getTextContent(
@@ -212,8 +222,8 @@ export class TweetNode extends DecoratorBlockNode {
     }
 }
 
-export function $createTweetNode(tweetID: string): TweetNode {
-    return new TweetNode(tweetID);
+export function $createTweetNode(tweetID: string, url: string): TweetNode {
+    return new TweetNode(tweetID, url);
 }
 
 export function $isTweetNode(

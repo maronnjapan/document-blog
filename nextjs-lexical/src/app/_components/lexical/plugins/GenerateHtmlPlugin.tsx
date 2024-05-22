@@ -25,7 +25,7 @@ export default function GenerateHtmlPlugin() {
 
             const editorStateTextString = parsedEditorState.read(() => $getRoot().getTextContent())
             const markdown = $convertToMarkdownString(TRANSFORMER_PATTERNS);
-            console.log(markdown)
+            console.log(html)
             convertHtml(markdown).then(async (res) => {
                 await global.navigator.clipboard.writeText(res);
                 alert('クリップボードに保存しました')

@@ -125,6 +125,11 @@ export async function convertHtml(markdown: string, isBlog: boolean = true) {
         urls.push(val.replace(/@\[linkCard\]\(/gi, '').replace(/\)$/, ''))
     })
 
+    const tweetPattern = /----tweetEmbed----\(https?:\/\/(?:www\.)?(twitter|x)\.com\/(?:#!\/)?(?:\w+)\/status(?:es)?\/(\d+)\)/gi;
+    const matchTweets = convertMarkDown.match(tweetPattern)
+    const matchTweetIds = matchTweets?.map((t) => t.replace(/----tweetEmbed----\(https?:\/\/(?:www\.)?(twitter|x)\.com\/(?:#!\/)?(?:\w+)\/status(?:es)?\//, '').replace('\)', ''))
+    convertMarkDown = convertMarkDown.replaceAll(/----tweetEmbed----\(https?:\/\/(?:www\.)?(twitter|x)\.com\/(?:#!\/)?(?:\w+)\/status(?:es)?\//gi, '----tweetEmbed----')
+
 
     let contentHtml = markdownToHtml(isBlog ? addNewLinesInCode(convertMarkDown) : convertMarkDown);
 
@@ -143,6 +148,26 @@ export async function convertHtml(markdown: string, isBlog: boolean = true) {
             contentHtml = contentHtml
                 .replace(pickNoSrcImg[index], `${pickNoSrcImg[index].replace('/>', '')} src="${val.replace(/\(|\)/gi, '')}" >`)
         }
+    })
+
+    matchTweetIds?.forEach((val, index) => {
+        if (!matchTweets) { return }
+        const matchTweetUrl = matchTweets[index].replace('----tweetEmbed----(', '').replace(/\)$/gi, '')
+        contentHtml = contentHtml.replace(`<p>----tweetEmbed----${val})</p>`, `<div class="twitter-tweet twitter-tweet-rendered"
+        style="display: flex; max-width: 550px; width: 100%; margin-top: 10px; margin-bottom: 10px;position:relative;height: 300px;overflow-y:hidden;">
+        <a href="${matchTweetUrl}"
+        onMouseOut="this.style.opacity='0.8';" onMouseOver="this.style.opacity='0.6'"
+        target="_blank" rel="noopener noreferrer"
+            style="position: absolute;bottom: 0;width: 100%;height: 100px;background-color: #fff;opacity: 0.8;display: flex;align-items: center;justify-content: center;">
+            詳細を確認する
+        </a>
+        <iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true"
+            class="tweet-iframe"
+            style="position: static; visibility: visible; width: 550px; height: 400%; display: block; flex-grow: 1;pointer-events: none;"
+            title="X Post"
+            src="https://platform.twitter.com/embed/Tweet.html?dnt=false&amp;embedId=twitter-widget-0&amp;features=e30%3D&amp;frame=false&amp;hideCard=false&amp;hideThread=false&amp;id=${val}&amp;lang=en&amp;origin=file%3A%2F%2Fwsl%24%2FUbuntu%2Fvar%2Fwww%2Fdocument-blog%2Ftest.html&amp;theme=light&amp;widgetsVersion=2615f7e52b7e0%3A1702314776716&amp;width=550px"
+            data-tweet-id="${val}"></iframe>
+    </div>`)
     })
 
 

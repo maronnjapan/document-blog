@@ -10,6 +10,7 @@ import { $createMessageContentNode, $isMessageContentNode, MessageContentNode, M
 import { Permutation } from "@/libs/utility-types";
 import { TableNode, TableCellNode, TableRowNode, $isTableCellNode, $isTableRowNode, $isTableNode, $createTableNode, $createTableRowNode, $createTableCellNode } from '@lexical/table'
 import { $isFigmaNode, FigmaNode } from "./EmbedExternalSystemPlugin/FigmaPlugin/node";
+import { $isTweetNode, TweetNode } from "./EmbedExternalSystemPlugin/TwitterPlugin/node";
 
 export const IMAGE: TextMatchTransformer = {
   dependencies: [ImageNode],
@@ -186,7 +187,24 @@ export const FIGMA: ElementTransformer = {
   type: 'element',
 };
 
-export const TRANSFORMER_PATTERNS = [FIGMA, IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
+export const TWITTER: ElementTransformer = {
+  dependencies: [TweetNode],
+  export: (node) => {
+    if (!$isTweetNode(node)) {
+      return null;
+    }
+
+    return '----tweetEmbed----(' + node.getUrl() + ')';
+  },
+  // ここから下は一旦使わない
+  replace: (node, match) => {
+
+  },
+  regExp: /twitter/,
+  type: 'element',
+};
+
+export const TRANSFORMER_PATTERNS = [FIGMA, TWITTER, IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
 
 export const MarkdownPlugin = () => {
   return <MarkdownShortcutPlugin transformers={TRANSFORMER_PATTERNS}></MarkdownShortcutPlugin>;
