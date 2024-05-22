@@ -3,7 +3,7 @@ import { SerializedEditorState } from "lexical";
 import markdownToHtml from "zenn-markdown-html"
 import fs from 'fs';
 import path from "path";
-import { S3Client, ListObjectsCommand, GetObjectCommand, DeleteObjectsCommand, PutObjectCommand, ObjectIdentifier } from "@aws-sdk/client-s3";
+import { S3Client, ListObjectsCommand, GetObjectCommand, DeleteObjectsCommand, PutObjectCommand, ObjectIdentifier, CreateBucketCommand } from "@aws-sdk/client-s3";
 import { Client } from "@elastic/elasticsearch";
 
 // Instantiate the minio client with the endpoint
@@ -28,6 +28,7 @@ export async function storeContent(json: SerializedEditorState, contentText: str
     const textFileName = `content.txt`
     fs.writeFileSync(path.join(publicPath, jsonFileName), storeData)
     fs.writeFileSync(path.join(publicPath, textFileName), contentText)
+    await storeJsonInStorage(json, postId)
 }
 
 export async function storeJsonInStorage(json: SerializedEditorState, postId: string) {

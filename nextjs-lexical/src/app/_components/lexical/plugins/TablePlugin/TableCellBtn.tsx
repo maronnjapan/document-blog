@@ -1,5 +1,6 @@
+'use client'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { CSSProperties, useCallback, useEffect, useState } from 'react';
+import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import { $getTableCellNodeFromLexicalNode, $getTableRowIndexFromTableCellNode, $getTableColumnIndexFromTableCellNode, TableNode, $isTableNode } from '@lexical/table'
 import { $getSelection, $isRangeSelection } from 'lexical';
 import { createPortal } from 'react-dom';
@@ -14,6 +15,7 @@ export default function TableCellBtn({ anchorElm }: { anchorElm?: HTMLElement | 
     const [nowColumnIndex, setNowColumnIndex] = useState(0);
     const [nowRowIndex, setNowRowIndex] = useState(0)
     const [isShowMenu, setIsShowMenu] = useState(false)
+    const buttonElm = useRef<HTMLButtonElement | null>(null)
 
     const setCellElm = useCallback(() => {
         const selection = $getSelection();
@@ -52,7 +54,6 @@ export default function TableCellBtn({ anchorElm }: { anchorElm?: HTMLElement | 
     }, []);
 
 
-    const tableCellToggleId = 'table-cell-toggle'
     const createElm = (cellElm: HTMLElement | null) => {
         if (!anchorElm || !cellElm) {
             removeCellToggleElm()
@@ -78,7 +79,7 @@ export default function TableCellBtn({ anchorElm }: { anchorElm?: HTMLElement | 
 
         return createPortal(
             <>
-                <button onClick={() => setIsShowMenu(prev => !prev)} style={styles} id={tableCellToggleId}><TbChevronDown size={10}></TbChevronDown></button>
+                <button onClick={() => setIsShowMenu(prev => !prev)} style={styles} ref={buttonElm}><TbChevronDown size={10}></TbChevronDown></button>
                 <div className={`absolute z-30`} style={{
                     top: `${top}px`,
                     left: `${left + cellElm.clientWidth}px`,
@@ -92,7 +93,7 @@ export default function TableCellBtn({ anchorElm }: { anchorElm?: HTMLElement | 
     }
 
     const removeCellToggleElm = () => {
-        const cellElm = document.getElementById(tableCellToggleId)
+        const cellElm = buttonElm.current
         if (!cellElm) { return; }
         cellElm.style.transform = 'translate(10000px,1000000px)'
     }

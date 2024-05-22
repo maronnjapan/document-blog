@@ -648,6 +648,10 @@ video {
   z-index: 20 !important;
 }
 
+.z-30 {
+  z-index: 30 !important;
+}
+
 .block {
   display: block !important;
 }
@@ -708,8 +712,17 @@ video {
   width: 100% !important;
 }
 
+.w-fit {
+  width: -moz-fit-content !important;
+  width: fit-content !important;
+}
+
 .min-w-10 {
   min-width: 2.5rem !important;
+}
+
+.min-w-32 {
+  min-width: 8rem !important;
 }
 
 .max-w-4xl {

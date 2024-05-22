@@ -8,7 +8,7 @@ import { $createParagraphNode, $createTextNode, $isParagraphNode, $isTabNode, $i
 import { $createLinkPreviewNode, $isLinkPreviewNode, LinkPreviewNode } from "./LinkPreviewPlugin/node";
 import { $createMessageContentNode, $isMessageContentNode, MessageContentNode, MessageTypes } from "./MessagePlugin/content-node";
 import { Permutation } from "@/libs/utility-types";
-import { TableNode, TableCellNode, TableRowNode, $isTableCellNode, $isTableRowNode, $isTableNode } from '@lexical/table'
+import { TableNode, TableCellNode, TableRowNode, $isTableCellNode, $isTableRowNode, $isTableNode, $createTableNode, $createTableRowNode, $createTableCellNode } from '@lexical/table'
 
 export const IMAGE: TextMatchTransformer = {
   dependencies: [ImageNode],
@@ -90,7 +90,7 @@ export const MESSAGE: ElementTransformer = {
     const messageTypes: Permutation<MessageTypes> = ['alert', 'warning', '']
 
     const targetMessageType = messageTypes.find(type => type === trimMathcText);
-    if (!targetMessageType) {
+    if (targetMessageType === undefined) {
       return null;
     }
     const messageContent = $createMessageContentNode(targetMessageType)
@@ -121,29 +121,74 @@ export const LINK_CARD: TextMatchTransformer = {
   type: 'text-match',
 };
 
-export const TABLE: TextMatchTransformer = {
+export const TABLE: ElementTransformer = {
   dependencies: [TableNode, TableRowNode, TableCellNode],
   export: (node) => {
-    const parent = node.getParent()
-    if (!$isTableNode(parent)) {
+
+    if (!$isTableNode(node)) {
       return null;
     }
 
     const separate = ' | ';
-    const tableItems = node.getTextContent().split('\n').map((val, index) => index % 2 === 1 ? ' | ' : `${val}`);
-    const headerMarkdown = !node.getPreviousSibling() ? `| ${[...Array(tableItems.filter(i => i !== separate).length)].map(() => '----').join(separate)} |\n` : ''
+    const children = node.getChildren()
+    const childrenTexts = children.map(child => child.getTextContent().split('\n').map((val, index) => index % 2 === 1 ? ' | ' : `${val}`))
+    const headerSeparete = [...Array(childrenTexts[0].filter(i => i !== separate).length)].map(() => '----').join(separate)
+    const headerText = childrenTexts[0].join('');
+    const bodyTexts = childrenTexts.slice(1).map((val) => {
+      return `| ${val.join('')} |`
+    });
+    const bodyText = bodyTexts.join('\n')
 
-    return `| ${tableItems.join('')} |\n${headerMarkdown}`
+    return `| ${headerText} |\n| ${headerSeparete} |\n${bodyText}`
   },
   // 変換用に使用したいだけなので、ここから下の処理は使用していない
-  replace: () => { },
-  importRegExp: /[\s\S]*/,
-  regExp: /[\s\S]*/,
+  replace: (parentNode: ElementNode, children: LexicalNode[], match) => {
+    const [all] = match
+
+    const createRowNum = Number(all.replace(/.*\|/gi, '').trim())
+    const tabeleCotent = all.trim().match(/^\|.*\|/gi);
+    if (!tabeleCotent) { return };
+    const texts = tabeleCotent[0].replace(/^\|/, '').replace(/\|$/, '').split('|')
+    const tableNode = $createTableNode()
+    const tableRowNode = $createTableRowNode()
+    const tableCellNodes = texts.map((text) => $createTableCellNode(0).append($createParagraphNode().append($createTextNode(text.trim()))))
+    tableCellNodes.forEach(cell => { tableRowNode.append(cell) })
+    tableNode.append(tableRowNode)
+
+
+    for (let i = 1; i < createRowNum; i++) {
+      const tableRowNodeArterFirstRow = $createTableRowNode();
+      [...Array(tableCellNodes.length)].forEach(_ => { tableRowNodeArterFirstRow.append($createTableCellNode(0).append($createParagraphNode())) })
+      tableNode.append(tableRowNodeArterFirstRow)
+    }
+
+    return parentNode.replace(tableNode)
+  },
+  regExp: /^\|.+\| (\s|[0-9]+)\s/g,
+  type: 'element',
+};
+
+export const TWITTER: TextMatchTransformer = {
+  dependencies: [LinkPreviewNode],
+  export: (node) => {
+    if (!$isLinkPreviewNode(node)) {
+      return null;
+    }
+
+    return '@[linkCard](' + node.getUrl() + ')';
+  },
+  replace: (node, match) => {
+    const [, url] = match
+    const linkPreviewNode = $createLinkPreviewNode({ url })
+    node.replace(linkPreviewNode)
+  },
+  importRegExp: /https:\/\/twitter.com/,
+  regExp: /https:\/\/twitter.com/,
   trigger: '',
   type: 'text-match',
 };
 
-export const TRANSFORMER_PATTERNS = [IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
+export const TRANSFORMER_PATTERNS = [TWITTER, IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
 
 export const MarkdownPlugin = () => {
   return <MarkdownShortcutPlugin transformers={TRANSFORMER_PATTERNS}></MarkdownShortcutPlugin>;

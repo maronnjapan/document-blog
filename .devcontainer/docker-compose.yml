@@ -34,16 +34,35 @@ services:
 
   minio:
     image: minio/minio:latest
+    volumes:
+      - ./minio/data:/data
+      - ./minio/export:/export
+      - ./minio/config:/root/.minio
+      - ./minio/policies:/policies
+    command: server --console-address ":9001" /data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD: password
-    volumes:
-      - minio:/data
-      - /var/www/document-blog:/var/www/document-blog/.minio
-    command: server --console-address ":9001" /data
-    ports:
-      - 9000:9000
-      - 9001:9001
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+    #   interval: 30s
+    #   timeout: 20s
+    #   retries: 3
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 root password;
+      /usr/bin/mc rm -r --force myminio/blogs;
+      /usr/bin/mc mb myminio/blogs;
+      /usr/bin/mc policy download myminio/blogs;
+      exit 0;
+      "
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0

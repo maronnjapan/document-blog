@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { TableNode, $createTableRowNode, $isTableRowNode, TableRowNode, $createTableCellNode, TableCellNode, $isTableCellNode, $deleteTableRow__EXPERIMENTAL, $deleteTableColumn__EXPERIMENTAL, $insertTableColumn__EXPERIMENTAL, $insertTableRow__EXPERIMENTAL, $getTableCellNodeFromLexicalNode } from '@lexical/table'
+import { TableNode, $createTableRowNode, $isTableRowNode, TableRowNode, $createTableCellNode, TableCellNode, $isTableCellNode, $deleteTableRow__EXPERIMENTAL, $deleteTableColumn__EXPERIMENTAL, $insertTableColumn__EXPERIMENTAL, $insertTableRow__EXPERIMENTAL, $getTableCellNodeFromLexicalNode, $isTableSelection } from '@lexical/table'
 import { $createParagraphNode, $getSelection, $isRangeSelection } from 'lexical';
 import { useCallback } from 'react';
 
