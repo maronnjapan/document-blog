@@ -9,6 +9,7 @@ import { $createLinkPreviewNode, $isLinkPreviewNode, LinkPreviewNode } from "./L
 import { $createMessageContentNode, $isMessageContentNode, MessageContentNode, MessageTypes } from "./MessagePlugin/content-node";
 import { Permutation } from "@/libs/utility-types";
 import { TableNode, TableCellNode, TableRowNode, $isTableCellNode, $isTableRowNode, $isTableNode, $createTableNode, $createTableRowNode, $createTableCellNode } from '@lexical/table'
+import { $isFigmaNode, FigmaNode } from "./EmbedExternalSystemPlugin/FigmaPlugin/node";
 
 export const IMAGE: TextMatchTransformer = {
   dependencies: [ImageNode],
@@ -168,27 +169,24 @@ export const TABLE: ElementTransformer = {
   type: 'element',
 };
 
-export const TWITTER: TextMatchTransformer = {
-  dependencies: [LinkPreviewNode],
+export const FIGMA: ElementTransformer = {
+  dependencies: [FigmaNode],
   export: (node) => {
-    if (!$isLinkPreviewNode(node)) {
+    if (!$isFigmaNode(node)) {
       return null;
     }
 
-    return '@[linkCard](' + node.getUrl() + ')';
+    return '@[figma](' + node.getTextContent() + ')';
   },
+  // ここから下は一旦使わない
   replace: (node, match) => {
-    const [, url] = match
-    const linkPreviewNode = $createLinkPreviewNode({ url })
-    node.replace(linkPreviewNode)
+
   },
-  importRegExp: /https:\/\/twitter.com/,
-  regExp: /https:\/\/twitter.com/,
-  trigger: '',
-  type: 'text-match',
+  regExp: /figma/,
+  type: 'element',
 };
 
-export const TRANSFORMER_PATTERNS = [TWITTER, IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
+export const TRANSFORMER_PATTERNS = [FIGMA, IMAGE, COLLAPSIBLE, LINK_CARD, MESSAGE, TABLE, ...TRANSFORMERS]
 
 export const MarkdownPlugin = () => {
   return <MarkdownShortcutPlugin transformers={TRANSFORMER_PATTERNS}></MarkdownShortcutPlugin>;
