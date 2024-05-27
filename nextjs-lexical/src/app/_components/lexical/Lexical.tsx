@@ -69,6 +69,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
             <HistoryPlugin />
             <ListPlugin></ListPlugin>
             <TablePlugin anchorElm={floatingAnchorElem}></TablePlugin>
+            <MentionPlugin anchorElm={floatingAnchorElem}></MentionPlugin>
             <CheckListPlugin />
             <MarkdownPlugin></MarkdownPlugin>
             <CodeHighlightPlugin></CodeHighlightPlugin>
@@ -83,7 +84,6 @@ export const Lexical = ({ postId }: { postId: string }) => {
             <ClipboardImageHandler></ClipboardImageHandler>
             <MessagePlugin></MessagePlugin>
             <EmbedExternalSystemPlugin></EmbedExternalSystemPlugin>
-            <MentionPlugin></MentionPlugin>
             {!!floatingAnchorElem && <>
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} isLinkEditMode={isLinkEditMode} setIsLinkEditMode={setIsLinkEditMode}></FloatingLinkEditorPlugin>
                 <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem}></FloatingTextFormatToolbarPlugin>

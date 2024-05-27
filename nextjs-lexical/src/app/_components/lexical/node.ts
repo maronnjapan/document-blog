@@ -13,5 +13,6 @@ import { TableNode, TableCellNode, TableRowNode } from '@lexical/table'
 import { TweetNode } from "./plugins/EmbedExternalSystemPlugin/TwitterPlugin/node";
 import { YouTubeNode } from "./plugins/EmbedExternalSystemPlugin/YoutubePlugin/node";
 import { FigmaNode } from "./plugins/EmbedExternalSystemPlugin/FigmaPlugin/node";
+import { DisableMentionNode, MentionNode } from "./plugins/MentionPlugin/node";
 
-export const nodes: Klass<LexicalNode>[] = [HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, CodeHighlightNode, LinkNode, AutoLinkNode, ImageNode, LinkPreviewNode, CollapsibleContainerNode, CollapsibleContentNode, CollapsibleTitleNode, MessageContentNode, TableNode, TableCellNode, TableRowNode, TweetNode, YouTubeNode, FigmaNode]
+export const nodes: Klass<LexicalNode>[] = [HeadingNode, QuoteNode, ListNode, ListItemNode, CodeNode, CodeHighlightNode, LinkNode, AutoLinkNode, ImageNode, LinkPreviewNode, CollapsibleContainerNode, CollapsibleContentNode, CollapsibleTitleNode, MessageContentNode, TableNode, TableCellNode, TableRowNode, TweetNode, YouTubeNode, FigmaNode, MentionNode, DisableMentionNode]

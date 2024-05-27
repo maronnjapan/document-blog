@@ -95,7 +95,7 @@ export default function TableCellBtn({ anchorElm }: { anchorElm?: HTMLElement | 
     const removeCellToggleElm = () => {
         const cellElm = buttonElm.current
         if (!cellElm) { return; }
-        cellElm.style.transform = 'translate(10000px,1000000px)'
+        cellElm.style.display = 'none'
     }
 
     return <>

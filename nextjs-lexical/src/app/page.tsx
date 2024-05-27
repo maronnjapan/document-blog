@@ -12,29 +12,29 @@ export default function Page() {
   const posts = getTitles()
 
 
-  postDirs.forEach(
-    dir => {
-      try {
-        const fileContent = fs.readFileSync(path.join(process.cwd(), 'blogs', dir, 'content.txt'))
-        storeToElasticSearch(dir, fileContent.toString())
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log('右記の理由でElasticsearchに保存できませんでした', e.message)
-        }
-        return
-      }
+  // postDirs.forEach(
+  //   dir => {
+  //     try {
+  //       const fileContent = fs.readFileSync(path.join(process.cwd(), 'blogs', dir, 'content.txt'))
+  //       storeToElasticSearch(dir, fileContent.toString())
+  //     } catch (e) {
+  //       if (e instanceof Error) {
+  //         console.log('右記の理由でElasticsearchに保存できませんでした', e.message)
+  //       }
+  //       return
+  //     }
 
-    }
-  )
+  //   }
+  // )
 
-  try {
-    fetch('http://localhost:3000/atlassian', {
-      method: 'POST',
-      cache: 'no-cache'
-    });
-  } catch (e) {
-    console.log(e)
-  }
+  // try {
+  //   fetch('http://localhost:3000/atlassian', {
+  //     method: 'POST',
+  //     cache: 'no-cache'
+  //   });
+  // } catch (e) {
+  //   console.log(e)
+  // }
 
   const newPostId = ulid()
 

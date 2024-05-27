@@ -2,9 +2,9 @@ import { EditorThemeClasses } from "lexical";
 import styles from "../styles/EditorTheme.module.css";
 
 
-const tableTailwindClasses = 'border-2 max-w-4xl w-full';
-const tableHeaderTailwindClasses = 'border-2 bg-slate-100 w-20'
-const tableBodyTailwindClasses = 'border-2 w-20'
+const tableTailwindClasses = 'border-2 w-max';
+const tableHeaderTailwindClasses = 'border-2 bg-slate-100 w-30'
+const tableBodyTailwindClasses = 'border-2'
 const ulTailwindClasses = 'list-disc'
 const olTailwindClasses = 'list-decimal'
 export const theme: EditorThemeClasses = {
