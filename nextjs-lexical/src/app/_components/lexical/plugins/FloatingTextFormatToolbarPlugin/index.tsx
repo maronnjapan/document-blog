@@ -19,7 +19,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { getSelectedNode } from '../../utils/getSelectedNode';
-import { setFloatingElemPosition } from '../../utils/setFloatingElemPosition';
+import { setFloatingElemPosition } from './setFloatingElemPosition';
 import { getDOMRangeRect } from '../../utils/getDomRangeRect';
 import { TbBold, TbCode, TbItalic, TbLink, TbStrikethrough, TbSubscript, TbSuperscript, TbUnderline } from 'react-icons/tb';
 
@@ -72,7 +72,6 @@ function TextFormatFloatingToolbar({
                 const elementUnderMouse = document.elementFromPoint(x, y);
 
                 if (!popupCharStylesEditorRef.current.contains(elementUnderMouse)) {
-                    // Mouse is not over the target element => not a normal click, but probably a drag
                     popupCharStylesEditorRef.current.style.pointerEvents = 'none';
                 }
             }
@@ -112,6 +111,10 @@ function TextFormatFloatingToolbar({
         if (
             selection !== null &&
             nativeSelection !== null &&
+            /**
+             * isCollapsedはSelectionが範囲選択しているかの値
+             * 範囲選択している時はtrue
+             */
             !nativeSelection.isCollapsed &&
             rootElement !== null &&
             rootElement.contains(nativeSelection.anchorNode)

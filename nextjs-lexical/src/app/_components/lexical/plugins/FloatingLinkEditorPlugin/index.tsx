@@ -33,7 +33,7 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 
 import { getSelectedNode } from '../../utils/getSelectedNode';
-import { setFloatingElemPositionForLinkEditor } from '../../utils/setFloatingElemPositionForLinkEditor';
+import { setFloatingElemPositionForLinkEditor } from './setFloatingElemPositionForLinkEditor';
 import { sanitizeUrl } from '../../utils/url';
 import { TbCards, TbCheck, TbCross, TbEdit, TbTrash, TbX } from 'react-icons/tb';
 import { INSERT_LINK_PREVIEW_COMMAND } from '../LinkPreviewPlugin/command';

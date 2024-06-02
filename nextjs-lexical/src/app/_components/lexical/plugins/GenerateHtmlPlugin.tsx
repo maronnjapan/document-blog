@@ -12,8 +12,10 @@ export default function GenerateHtmlPlugin() {
     const [editor] = useLexicalComposerContext();
     const [isLoading, setIsLoading] = useState(false)
 
-    const generateHtml = () => {
+    const generateHtml = async () => {
         setIsLoading(() => true)
+
+        const editorState = editor.getEditorState()
 
         editor.update(async () => {
             // Lexicalの内容をHTMLに変換

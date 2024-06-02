@@ -4,11 +4,11 @@ import { $createImageNode, $isImageNode, ImageNode } from "./InserImagePlugin/no
 import { $createCollapsibleContainerNode, $isCollapsibleContainerNode, CollapsibleContainerNode } from "./CollapsiblePlugin/container-node";
 import { $createCollapsibleContentNode, $isCollapsibleContentNode, CollapsibleContentNode } from "./CollapsiblePlugin/content-node";
 import { $createCollapsibleTitleNode, $isCollapsibleTitleNode, CollapsibleTitleNode } from "./CollapsiblePlugin/title-node";
-import { $createParagraphNode, $createTextNode, $isParagraphNode, $isTabNode, $isTextNode, ElementNode, LexicalNode } from "lexical";
+import { $createParagraphNode, $createTextNode, $isParagraphNode, ElementNode, LexicalNode } from "lexical";
 import { $createLinkPreviewNode, $isLinkPreviewNode, LinkPreviewNode } from "./LinkPreviewPlugin/node";
 import { $createMessageContentNode, $isMessageContentNode, MessageContentNode, MessageTypes } from "./MessagePlugin/content-node";
 import { Permutation } from "@/libs/utility-types";
-import { TableNode, TableCellNode, TableRowNode, $isTableCellNode, $isTableRowNode, $isTableNode, $createTableNode, $createTableRowNode, $createTableCellNode } from '@lexical/table'
+import { TableNode, TableCellNode, TableRowNode, $isTableNode, $createTableNode, $createTableRowNode, $createTableCellNode } from '@lexical/table'
 import { $isFigmaNode, FigmaNode } from "./EmbedExternalSystemPlugin/FigmaPlugin/node";
 import { $isTweetNode, TweetNode } from "./EmbedExternalSystemPlugin/TwitterPlugin/node";
 
@@ -143,7 +143,6 @@ export const TABLE: ElementTransformer = {
 
     return `| ${headerText} |\n| ${headerSeparete} |\n${bodyText}`
   },
-  // 変換用に使用したいだけなので、ここから下の処理は使用していない
   replace: (parentNode: ElementNode, children: LexicalNode[], match) => {
     const [all] = match
 

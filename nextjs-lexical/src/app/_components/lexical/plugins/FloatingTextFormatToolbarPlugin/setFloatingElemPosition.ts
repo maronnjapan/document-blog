@@ -26,7 +26,6 @@ export function setFloatingElemPosition(
     let left = targetRect.left - horizontalOffset;
 
     if (top < editorScrollerRect.top) {
-        // adjusted height for link element if the element is at top
         top +=
             floatingElemRect.height +
             targetRect.height +
