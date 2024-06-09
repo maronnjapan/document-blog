@@ -103,7 +103,7 @@ export const MESSAGE: ElementTransformer = {
   type: 'element',
 };
 
-export const LINK_CARD: TextMatchTransformer = {
+export const LINK_CARD: ElementTransformer = {
   dependencies: [LinkPreviewNode],
   export: (node) => {
     if (!$isLinkPreviewNode(node)) {
@@ -112,15 +112,13 @@ export const LINK_CARD: TextMatchTransformer = {
 
     return '@[linkCard](' + node.getUrl() + ')';
   },
-  replace: (node, match) => {
+  replace: (node, children, match) => {
     const [, url] = match
     const linkPreviewNode = $createLinkPreviewNode({ url })
     node.replace(linkPreviewNode)
   },
-  importRegExp: /@(?:\[linkCard\])(?:\(([^(]+)\))/,
   regExp: /@(?:\[linkCard\])(?:\(([^(]+)\))$/,
-  trigger: ')',
-  type: 'text-match',
+  type: 'element',
 };
 
 export const TABLE: ElementTransformer = {

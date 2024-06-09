@@ -1,5 +1,4 @@
-'use client';
-import { getBlogJson, getBlogJsonByPublicDir } from "@/app/actions";
+import { getBlogJsonByPublicDir } from "@/app/actions";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
 
@@ -7,13 +6,11 @@ export const ImportPlugin = ({ postId }: { postId: string }) => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
-        editor.update(async () => {
-            const json = await getBlogJsonByPublicDir(postId)
-            if (!json) return;
-            const editorState = editor.parseEditorState(json);
+        getBlogJsonByPublicDir(postId).then((res) => {
+            const editorState = editor.parseEditorState(res ?? '');
             editor.setEditorState(editorState);
-        });
-    }, [editor]);
+        }).catch(() => { alert('エラーによってインポートができませんでした') })
+    }, []);
 
     return null;
 };

@@ -28,10 +28,10 @@ import ClipboardImageHandler from "./plugins/InserImagePlugin/clipboard-handler"
 import CollapsiblePlugin from "./plugins/CollapsiblePlugin";
 import MessagePlugin from "./plugins/MessagePlugin";
 import TablePlugin from "./plugins/TablePlugin";
-import { events } from "@elastic/elasticsearch";
 import EmbedExternalSystemPlugin from "./plugins/EmbedExternalSystemPlugin";
 import MentionPlugin from "./plugins/MentionPlugin";
 import EmojiPlugin from "./plugins/EmojiPlugin";
+import ClickableLinkPlugin from "./plugins/ClickableLinkPlugin";
 
 const initialConfig: ComponentProps<typeof LexicalComposer>["initialConfig"] = {
     namespace: "MyEditor",
@@ -66,6 +66,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
                 />
             </div>
             <AutoFocusPlugin></AutoFocusPlugin>
+            <ClickableLinkPlugin></ClickableLinkPlugin>
             <HistoryPlugin />
             <ListPlugin></ListPlugin>
             <TablePlugin anchorElm={floatingAnchorElem}></TablePlugin>
