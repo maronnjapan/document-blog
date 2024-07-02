@@ -87,9 +87,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
             {!!floatingAnchorElem && <>
                 <FloatingLinkEditorPlugin anchorElem={floatingAnchorElem} isLinkEditMode={isLinkEditMode} setIsLinkEditMode={setIsLinkEditMode}></FloatingLinkEditorPlugin>
                 <FloatingTextFormatToolbarPlugin anchorElem={floatingAnchorElem}></FloatingTextFormatToolbarPlugin>
-                <EmojiPlugin anchorElm={floatingAnchorElem}></EmojiPlugin>
             </>}
-
         </LexicalComposer>
 
     );

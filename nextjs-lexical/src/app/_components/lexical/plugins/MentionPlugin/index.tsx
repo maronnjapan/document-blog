@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { $createDisableMentionNode, $createMentionNode, $isDisableMentionNode, $isMentionNode } from "./node";
 import SelectsFloating from "./SelectsFloating";
 import { select } from "../ToolBarPlugin/styles/Toolbar.module.css";
+import HoverInfo from "./HoverInfo";
 
 export default function MentionPlugin({ anchorElm }: { anchorElm?: HTMLElement | null }) {
     const [editor] = useLexicalComposerContext()
@@ -69,6 +70,7 @@ export default function MentionPlugin({ anchorElm }: { anchorElm?: HTMLElement |
             })
         })
     }, [editor])
+
     useEffect(() => {
         return mergeRegister(editor.registerCommand(KEY_ESCAPE_COMMAND, () => {
             const selection = $getSelection()
@@ -90,5 +92,7 @@ export default function MentionPlugin({ anchorElm }: { anchorElm?: HTMLElement |
         }, COMMAND_PRIORITY_HIGH))
     }, [editor])
 
-    return <>{(!!anchorElm && !!mentionElm) && <SelectsFloating anchorElm={anchorElm} searchText={mentionText} mentionElm={mentionElm}></SelectsFloating>}</>
+    return <>{(!!anchorElm && !!mentionElm) && <><SelectsFloating anchorElm={anchorElm} searchText={mentionText} mentionElm={mentionElm}></SelectsFloating></>}
+        {!!anchorElm && <HoverInfo anchorElm={anchorElm} ></HoverInfo>}
+    </>
 }

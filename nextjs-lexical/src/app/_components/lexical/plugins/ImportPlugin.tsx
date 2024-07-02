@@ -1,5 +1,6 @@
 import { getBlogJsonByPublicDir } from "@/app/actions";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $createParagraphNode, ParagraphNode } from "lexical";
 import { useEffect } from "react";
 
 export const ImportPlugin = ({ postId }: { postId: string }) => {

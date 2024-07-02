@@ -1,18 +1,20 @@
 import path from "path"
 import * as fs from 'fs'
 
-export const getTitles = () => {
+export const getPosts = () => {
     const titleFilePattern = /[\s\S]*\.title/g
 
     const postDirs = getPostDirs()
     return postDirs.map(dir => (
         {
             postId: dir,
-            title: fs.readdirSync(path.join(process.cwd(), 'blogs', dir)).find(file => titleFilePattern.test(file))?.replace('.title', '') ?? '無題'
+            title: fs.readdirSync(path.join(process.cwd(), 'blogs', dir)).find(file => titleFilePattern.test(file))?.replace('.title', '') ?? '無題',
+            content: fs.readFileSync(path.join(process.cwd(), 'blogs', dir, 'content.txt')).toString()
         }
     )
     )
 }
+
 
 export const getTitleById = (id: string) => {
     const titleFilePattern = /[\s\S]*\.title/g

@@ -57,7 +57,7 @@ services:
       - minio
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc config host add myminio http://minio:9000 root password;
+      /usr/bin/mc config host add myminio http://minio:9001 root password;
       /usr/bin/mc rm -r --force myminio/blogs;
       /usr/bin/mc mb myminio/blogs;
       /usr/bin/mc policy download myminio/blogs;

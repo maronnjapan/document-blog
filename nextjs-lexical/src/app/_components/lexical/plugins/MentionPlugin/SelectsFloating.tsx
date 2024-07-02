@@ -5,40 +5,15 @@ import { CSSProperties, ReactPortal, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 import { $isMentionNode } from "./node";
+import { mergeRegister } from '@lexical/utils'
 
-let isLoading = false;
 export default function SelectsFloating({ anchorElm, mentionElm, searchText }: { anchorElm: HTMLElement, mentionElm: HTMLElement, searchText: string }) {
     const mentionMenuRef = useRef<HTMLUListElement | null>(null)
     const [selectTexts, setSelectTexts] = useState<string[]>([])
     const [editor] = useLexicalComposerContext()
-    const [menuStyles, setMenuStyles] = useState<CSSProperties | null>()
+    const [isLoading, setIsLoading] = useState(false)
+    const [isExistEditor, setIsExistEditor] = useState(true)
 
-
-    useEffect(() => {
-        setMenuStyles(() => getMentionMenuStyles());
-        isLoading = true;
-        getContents()
-    }, [searchText])
-
-    const handleClick = (text: string) => {
-        editor.update(() => {
-            const selection = $getSelection()
-
-            if (!$isRangeSelection(selection)) { return null }
-            const node = getSelectedNode(selection)
-
-            const parent = node.getParent()
-            if ($isMentionNode(parent)) {
-                node.replace($createTextNode(`@${text}`))
-                parent.insertAfter($createTextNode(' '))
-                parent.selectNext()
-            }
-            if (mentionMenuRef?.current) {
-                mentionMenuRef.current = null
-            }
-
-        })
-    }
     const getMentionMenuStyles = (): CSSProperties | null => {
         if (!anchorElm) {
             return null
@@ -62,19 +37,46 @@ export default function SelectsFloating({ anchorElm, mentionElm, searchText }: {
         }
     }
 
-    const getContents = () => {
+    const [menuStyles, setMenuStyles] = useState<CSSProperties | null>(null)
 
-        getUsers(searchText)
-            .then((res) => {
-                setSelectTexts(() => res)
-                return Promise.resolve()
-            })
-            .catch(() => Promise.reject())
-            .finally(() => { isLoading = false })
+
+    useEffect(() => {
+        console.log(searchText)
+        setIsLoading(() => true)
+        getUsers(searchText).then((res) => {
+            setSelectTexts(() => res)
+            setMenuStyles(() => getMentionMenuStyles())
+        }).finally(() => {
+            setIsLoading(() => false)
+        })
+    }, [searchText])
+
+    const handleClick = (text: string) => {
+        editor.update(() => {
+            const selection = $getSelection()
+
+            if (!$isRangeSelection(selection)) { return null }
+            const node = getSelectedNode(selection)
+
+            const parent = node.getParent()
+            if ($isMentionNode(parent)) {
+                node.replace($createTextNode(`@${text}`))
+                parent.setDesidedText(`@${text}`)
+                parent.insertAfter($createTextNode(' '))
+                parent.selectNext()
+                setMenuStyles(() => null)
+            }
+            if (mentionMenuRef?.current) {
+                mentionMenuRef.current = null
+            }
+
+        })
     }
 
+    console.log(menuStyles)
+
     return <>
-        {menuStyles ?
+        {!!menuStyles && isExistEditor ?
             createPortal(
                 <div style={menuStyles}>
                     {isLoading ? <div className="flex justify-center h-full" aria-label="読み込み中">

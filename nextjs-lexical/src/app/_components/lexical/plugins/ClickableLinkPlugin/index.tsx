@@ -75,6 +75,7 @@ export default function ClickableLinkPlugin({
                         newTab || event.metaKey || event.ctrlKey || isMiddle
                             ? '_blank'
                             : '_self',
+                        'noreferrer'
                     );
                     event.preventDefault();
                 } catch { }
@@ -88,7 +89,16 @@ export default function ClickableLinkPlugin({
                 rootElement: null | HTMLElement,
                 prevRootElement: null | HTMLElement,
             ) => {
-                // Q.prevRootElementに値が存在するケースが思い浮かばない
+                /**
+                 * 以下がprevRootElementにデータが格納されるケースです。
+                 * ①エディタの内容が変更される前に、すでにルートノードにHTMLコンテンツが存在していた場合。
+                 * 例えば、エディタを初期化する際に初期値としてHTMLコンテンツを設定していた場合などです。
+                 * ②registerRootListenerが複数回呼び出された場合。
+                 * registerRootListenerが呼び出されるたびに、前回のルートノードのHTMLがprevRootHtmlに渡されます。
+                 * これにより、前回のルートノードの状態と現在のルートノードの状態を比較することができます。
+                 * ③エディタの内容が動的に変更された場合。
+                 * ユーザーの操作やプログラムによってエディタの内容が変更された場合、prevRootHtmlにはその変更前のHTMLが存在することになります。
+                 */
                 if (prevRootElement !== null) {
                     prevRootElement.removeEventListener('click', onClick);
                     prevRootElement.removeEventListener('auxclick', onClick);

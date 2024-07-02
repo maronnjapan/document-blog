@@ -16,7 +16,7 @@ import { $setBlocksType } from "@lexical/selection";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TbAlertCircle, TbChecklist, TbChevronDown, TbCode, TbFile, TbH1, TbH2, TbH3, TbList, TbListNumbers, TbQuote, TbSelect, TbSquareToggle, TbTable } from "react-icons/tb";
 import { CODE_LANGUAGE_COMMAND } from "../CodeHighlightPlugin";
-import { INSERT_IMAGE_COMMAND } from "../InserImagePlugin/command";
+import { INSERT_IMAGE_COMMAND, uploadImage } from "../InserImagePlugin/command";
 import { INSERT_COLLAPSIBLE_COMMAND } from "../CollapsiblePlugin";
 import { $createMessageContentNode, $isMessageContentNode, MessageTypes } from "../MessagePlugin/content-node";
 import { $isCollapsibleContainerNode } from "../CollapsiblePlugin/container-node";
@@ -24,6 +24,8 @@ import { $isCollapsibleContentNode } from "../CollapsiblePlugin/content-node";
 import { INSERT_TABLE_COMMAND, $isTableRowNode, $isTableCellNode } from '@lexical/table'
 import SelectTableCells from "./SelectTableCells";
 import { getSelectedNode } from "../../utils/getSelectedNode";
+import { createPresignedUrl } from "@/app/actions";
+import axios from "axios";
 
 const HeadingBlocks: { [key in HeadingTagType]: string } = {
     h1: "Heading 1",
@@ -184,23 +186,14 @@ export default function ToolBarPlugin() {
         if (fileInputRef) { fileInputRef.click() }
     }
 
-    const loadImage = (files: FileList | null) => {
+    const loadImage = async (files: FileList | null) => {
         const reader = new FileReader();
 
         if (files !== null) {
             reader.readAsDataURL(files[0]);
             const file = files[0]
 
-            reader.onload = function () {
-                if (typeof reader.result === 'string') {
-                    editor.update(() => {
-                        editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-                            altText: file.name,
-                            src: reader.result?.toString() ?? ''
-                        });
-                    });
-                }
-            };
+            await uploadImage(file, editor)
 
 
         }

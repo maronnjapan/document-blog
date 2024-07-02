@@ -21,7 +21,7 @@ import {
     SerializedElementNode,
 } from 'lexical';
 
-export type SerializedMentionNode = SerializedElementNode
+export type SerializedMentionNode = Spread<{ desidedText?: string }, SerializedElementNode>
 
 
 function $convertMentionElement(
@@ -49,20 +49,21 @@ function $convertDisableMentionElement(
 }
 
 export class MentionNode extends ElementNode {
-
-
+    __desidedText?: string
     static getType(): string {
         return 'mention';
     }
 
     static clone(node: MentionNode): MentionNode {
         return new MentionNode(
+            node.__desidedText,
             node.__key,
         );
     }
 
-    constructor(key?: NodeKey) {
+    constructor(desidedText?: string, key?: NodeKey) {
         super(key);
+        this.__desidedText = desidedText ?? undefined;
     }
 
     createDOM(config: EditorConfig): HTMLSpanElement {
@@ -89,26 +90,35 @@ export class MentionNode extends ElementNode {
     static importJSON(
         serializedNode: SerializedMentionNode,
     ): MentionNode {
-        const node = $createMentionNode();
+        const node = $createMentionNode(serializedNode.desidedText);
         return node;
     }
 
     exportJSON(): SerializedMentionNode {
         return {
             ...super.exportJSON(),
+            desidedText: this.getDesidedText(),
             type: 'mention',
             version: 1,
         }
     }
 
-    isInline(): true {
+    isInline(): boolean {
         return true;
     }
 
+    setDesidedText(arg: string | undefined) {
+        const writable = this.getWritable()
+        writable.__desidedText = arg
+    }
+
+    getDesidedText() {
+        return this.__desidedText;
+    }
 }
 
-export function $createMentionNode(): MentionNode {
-    const mentionNode = new MentionNode();
+export function $createMentionNode(desidedText?: string): MentionNode {
+    const mentionNode = new MentionNode(desidedText);
     return $applyNodeReplacement(mentionNode);
 }
 

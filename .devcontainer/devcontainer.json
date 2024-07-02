@@ -5,9 +5,6 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	"features": {
-		"ghcr.io/devcontainers-contrib/features/prisma:2": {}
-	},
 	"forwardPorts": [
 		"5432"
 	]

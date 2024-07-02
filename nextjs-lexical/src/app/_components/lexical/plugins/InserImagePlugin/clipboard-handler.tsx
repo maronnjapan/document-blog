@@ -4,7 +4,9 @@ import { FC, useEffect } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { DRAG_DROP_PASTE } from '@lexical/rich-text';
 import { mediaFileReader } from '@lexical/utils';
-import { INSERT_IMAGE_COMMAND } from './command';
+import { INSERT_IMAGE_COMMAND, uploadImage } from './command';
+import { createPresignedUrl, getFileUrl } from '@/app/actions';
+import axios from 'axios';
 
 
 const ACCEPTABLE_IMAGE_TYPES = [
@@ -32,16 +34,7 @@ const ClipboardImageHandler: FC = () => {
                         reader.readAsDataURL(filesResult[0].file);
                         const file = filesResult[0].file
 
-                        reader.onload = function () {
-                            if (typeof reader.result === 'string') {
-                                editor.update(() => {
-                                    editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
-                                        altText: file.name,
-                                        src: reader.result?.toString() ?? ''
-                                    });
-                                });
-                            }
-                        };
+                        await uploadImage(file, editor)
 
 
                     }

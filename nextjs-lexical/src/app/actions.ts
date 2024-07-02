@@ -5,18 +5,46 @@ import fs from 'fs';
 import path from "path";
 import { S3Client, ListObjectsCommand, GetObjectCommand, DeleteObjectsCommand, PutObjectCommand, ObjectIdentifier, CreateBucketCommand } from "@aws-sdk/client-s3";
 import { Client } from "@elastic/elasticsearch";
+import * as prettier from 'prettier'
+import typescriptPlugins from 'prettier/plugins/typescript'
+import { ulid } from "ulid";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// Instantiate the minio client with the endpoint
-// and access keys as shown below.
-const client = new S3Client({
-    credentials: {
-        accessKeyId: 'root',
-        secretAccessKey: 'password'
-    },
-    region: 'us-east-2',
-    endpoint: 'http://minio:9000',
-    forcePathStyle: true
-});
+
+const REGION = process.env.REGION
+const BUCKET = process.env.BUCKET;
+const ACCESS_ID = process.env.ACCESS_ID
+const ACCESS_SECRET = process.env.ACCESS_SECRET
+const STORAGE_ENDPOINT = process.env.STORAGE_ENDPOINT
+if (!REGION || !ACCESS_ID || !ACCESS_SECRET) { throw new Error() }
+
+const client = new S3Client({ region: REGION, credentials: { accessKeyId: ACCESS_ID, secretAccessKey: ACCESS_SECRET }, endpoint: STORAGE_ENDPOINT, forcePathStyle: true });
+
+const clientForFrontEnd = new S3Client({ region: REGION, credentials: { accessKeyId: ACCESS_ID, secretAccessKey: ACCESS_SECRET }, endpoint: 'http://localhost:9000', forcePathStyle: true });
+
+export const createPresignedUrl = async (fileName: string) => {
+
+    const fileId = ulid()
+    const match = /\.[a-zA-Z0-9]+$/gi.exec(fileName)
+    if (!match) {
+        throw new Error('ファイル名の形式がただしくありません')
+    }
+    const key = `${fileId}${match[0]}`;
+    const command = new PutObjectCommand({ Bucket: BUCKET, Key: key });
+    const url = await getSignedUrl(clientForFrontEnd, command, { expiresIn: 3600 })
+    return { fileId, url }
+};
+
+export const getFileUrl = async (fileId: string, fileName: string) => {
+    const match = /\.[a-zA-Z0-9]+$/gi.exec(fileName)
+    if (!match) {
+        throw new Error('ファイル名の形式がただしくありません')
+    }
+    const key = `${fileId}${match[0]}`;
+    const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+
+    return await getSignedUrl(clientForFrontEnd, command, { expiresIn: 9999999999 });
+};
 
 export async function storeContent(json: SerializedEditorState, contentText: string, postId: string) {
     const storeData = JSON.stringify(json, null, "\t")
@@ -94,6 +122,7 @@ export async function getBlogJsonByPublicDir(postId: string) {
 export async function getUsers(userName: string) {
     return ['田中太郎', '田中二郎', '田中三郎'].filter(val => val.includes(userName))
 }
+
 
 
 const replaceWord = 'replaceWordWrapChangedAnotherWord'

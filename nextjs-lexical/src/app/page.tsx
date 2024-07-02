@@ -1,22 +1,28 @@
-import path from "path";
-import * as fs from 'fs'
-import Link from "next/link";
+
 import { pagesPath } from "@/router/$path";
 import NewPostButton from "./_components/button/NewPostButton";
 import { ulid } from "ulid";
 import { storeToElasticSearch } from "./actions";
-import { getPostDirs, getTitles } from "@/libs/handle-file";
+import { getPosts } from "@/libs/handle-file";
+import { LinkCard } from "./_components/cards/link-card";
+import { summarizeWithNLTK } from "@/libs/summary";
+import axios from "axios";
 
-export default function Page() {
-  const postDirs = getPostDirs()
-  const posts = getTitles()
+export default async function Page() {
 
+  let summarizePosts = getPosts()
+  // try {
+  //   const posts = getPosts().map(async (p) => ({ ...p, content: (await axios.post('http://localhost:3000/summarize', { text: p.content, sentenceCount: 3 })).data }))
+  //   summarizePosts = await Promise.all(posts.filter((_, index) => index === 0))
+  // } catch (e) {
+  //   console.log('エラーですうう')
+  //   return null;
+  // }
 
-  // postDirs.forEach(
-  //   dir => {
+  // posts.forEach(
+  //   post => {
   //     try {
-  //       const fileContent = fs.readFileSync(path.join(process.cwd(), 'blogs', dir, 'content.txt'))
-  //       storeToElasticSearch(dir, fileContent.toString())
+  //       storeToElasticSearch(post.postId, post.content)
   //     } catch (e) {
   //       if (e instanceof Error) {
   //         console.log('右記の理由でElasticsearchに保存できませんでした', e.message)
@@ -40,13 +46,13 @@ export default function Page() {
 
   return (
     <div>
-      <ul>
-        {posts.map((post) => {
+      <div>
+        {summarizePosts.map((post) => {
           return (
-            <li key={post.postId}><Link href={pagesPath.posts._postId(post.postId).$url().path}>{post.title}</Link></li>
+            <LinkCard key={post.postId} link={pagesPath.posts._postId(post.postId).$url().path} title={post.title} content={post.content} />
           )
         })}
-      </ul>
+      </div>
       <div>
         <NewPostButton postId={newPostId} />
       </div>
