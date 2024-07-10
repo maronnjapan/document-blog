@@ -40,7 +40,7 @@ const initialConfig: ComponentProps<typeof LexicalComposer>["initialConfig"] = {
     theme: theme
 };
 
-export const Lexical = ({ postId }: { postId: string }) => {
+export const Lexical = ({ postId, isResize }: { postId: string, isResize?: boolean }) => {
     const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
     const [floatingAnchorElem, setFloatingAnchorElem] =
         useState<HTMLDivElement | null>(null);
@@ -59,7 +59,7 @@ export const Lexical = ({ postId }: { postId: string }) => {
 
                 <RichTextPlugin
                     contentEditable={<div ref={onRef} className={styles["contentEditable-wrapper"]}>
-                        <ContentEditable className={styles.contentEditable} />
+                        <ContentEditable className={`${styles.contentEditable} ${isResize ? 'resize overflow-auto' : ''}`} />
                     </div>}
                     placeholder={<div className={styles.placeholder}></div>}
                     ErrorBoundary={LexicalErrorBoundary}

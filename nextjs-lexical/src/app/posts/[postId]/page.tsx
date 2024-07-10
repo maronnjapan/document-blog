@@ -16,7 +16,7 @@ export default function Page({ params }: { params: { postId: string } }) {
     return (
         <VStack align={'start'}>
             <AutoSaveTitleInput postId={params.postId} title={title}></AutoSaveTitleInput>
-            <Lexical postId={params.postId}></Lexical>
+            <Lexical postId={params.postId} isResize></Lexical>
         </VStack>
     );
 };
