@@ -53,6 +53,7 @@ export const Lexical = ({ postId, isResize }: { postId: string, isResize?: boole
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
+
             <div className={`${styles.editorContainer}`}>
                 <div><AutoSavePlugin postId={postId}></AutoSavePlugin></div>
                 <ToolBarPlugin></ToolBarPlugin>
