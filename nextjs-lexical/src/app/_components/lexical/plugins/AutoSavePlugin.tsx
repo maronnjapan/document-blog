@@ -1,5 +1,5 @@
 'use client';
-import { storeContent } from "@/app/actions";
+import { storeContentAction } from "@/app/actions";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot, EditorState } from "lexical";
 import { useEffect, useRef } from "react";
@@ -33,7 +33,7 @@ const AutoSavePlugin = ({ postId }: { postId: string }) => {
                 timer.current = setTimeout(async () => {
                     const editorStateTextString = createTextForSearch(editorState)
                     // サーバー側での処理。今回はディレクトリにJSONファイルとtxtファイルを書き込んでいる
-                    await storeContent(editorState.toJSON(), editorStateTextString, postId)
+                    await storeContentAction(editorState.toJSON(), editorStateTextString, postId)
 
                 }, 3000);
             });

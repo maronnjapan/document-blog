@@ -7,6 +7,7 @@ import { getPosts } from "@/libs/handle-file";
 import { LinkCard } from "./_components/cards/link-card";
 import { summarizeWithNLTK } from "@/libs/summary";
 import axios from "axios";
+import HandleAuthButton from "./_components/auth/HandleAuthButton";
 
 export default async function Page() {
 
@@ -55,6 +56,7 @@ export default async function Page() {
       </div>
       <div>
         <NewPostButton postId={newPostId} />
+        <HandleAuthButton></HandleAuthButton>
       </div>
     </div>
   );

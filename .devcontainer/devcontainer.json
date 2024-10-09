@@ -6,7 +6,8 @@
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"forwardPorts": [
-		"5432"
+		"5432",
+		"8080"
 	]
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

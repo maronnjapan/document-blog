@@ -5,8 +5,8 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { DRAG_DROP_PASTE } from '@lexical/rich-text';
 import { mediaFileReader } from '@lexical/utils';
 import { INSERT_IMAGE_COMMAND, uploadImage } from './command';
-import { createPresignedUrl, getFileUrl } from '@/app/actions';
-import axios from 'axios';
+
+
 
 
 const ACCEPTABLE_IMAGE_TYPES = [

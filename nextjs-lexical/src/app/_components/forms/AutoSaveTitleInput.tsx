@@ -1,5 +1,5 @@
 'use client';
-import { storeTitle } from "@/app/actions";
+import { storeTitleAction } from "@/app/actions";
 import { ChangeEvent, useRef, useState } from "react";
 
 const AutoSaveTitleInput = (props: { postId: string, title: string }) => {
@@ -13,7 +13,7 @@ const AutoSaveTitleInput = (props: { postId: string, title: string }) => {
             clearTimeout(timer.current);
         }
         timer.current = setTimeout(async () => {
-            await storeTitle(props.postId, e.target.value.length > 0 ? e.target.value : '無題')
+            await storeTitleAction(props.postId, e.target.value.length > 0 ? e.target.value : '無題')
         }, 1000);
     }
 

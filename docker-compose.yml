@@ -1,22 +1,6 @@
 version: '3.8'
 
 services:
-  app:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ../..:/workspaces:cached
-      
-    # Overrides default command so things don't shut down after the process ends.
-    command: sleep infinity
-
-    network_mode: "host"
-
-    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
     image: postgres:latest
@@ -82,8 +66,6 @@ services:
       - es_data:/usr/share/elasticsearch/data
     # command:
     #   - eland_import_hub_model --url "http://elasticsearch:9200"  --hub-model-id cl-tohoku bert-base-japanese-v2 --task-type text_embedding --start
-    depends_on:
-      - app
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.13.0

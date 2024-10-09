@@ -24,7 +24,6 @@ import { $isCollapsibleContentNode } from "../CollapsiblePlugin/content-node";
 import { INSERT_TABLE_COMMAND, $isTableRowNode, $isTableCellNode } from '@lexical/table'
 import SelectTableCells from "./SelectTableCells";
 import { getSelectedNode } from "../../utils/getSelectedNode";
-import { createPresignedUrl } from "@/app/actions";
 import axios from "axios";
 
 const HeadingBlocks: { [key in HeadingTagType]: string } = {

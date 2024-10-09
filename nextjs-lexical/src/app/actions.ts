@@ -5,118 +5,46 @@ import fs from 'fs';
 import path from "path";
 import { S3Client, ListObjectsCommand, GetObjectCommand, DeleteObjectsCommand, PutObjectCommand, ObjectIdentifier, CreateBucketCommand } from "@aws-sdk/client-s3";
 import { Client } from "@elastic/elasticsearch";
-import * as prettier from 'prettier'
-import typescriptPlugins from 'prettier/plugins/typescript'
-import { ulid } from "ulid";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createPresignedUrl, getFileUrl } from "@/server/file";
+import { getBlogJson, getBlogJsonByPublicDir, storeJsonInStorage, storeStorage, storeTitle } from "@/server/storage";
+import { getBlogById, storePostInDb } from "@/server/dynamo-db";
 
 
-const REGION = process.env.REGION
-const BUCKET = process.env.BUCKET;
-const ACCESS_ID = process.env.ACCESS_ID
-const ACCESS_SECRET = process.env.ACCESS_SECRET
-const STORAGE_ENDPOINT = process.env.STORAGE_ENDPOINT
-if (!REGION || !ACCESS_ID || !ACCESS_SECRET) { throw new Error() }
 
-const client = new S3Client({ region: REGION, credentials: { accessKeyId: ACCESS_ID, secretAccessKey: ACCESS_SECRET }, endpoint: STORAGE_ENDPOINT, forcePathStyle: true });
 
-const clientForFrontEnd = new S3Client({ region: REGION, credentials: { accessKeyId: ACCESS_ID, secretAccessKey: ACCESS_SECRET }, endpoint: 'http://localhost:9000', forcePathStyle: true });
-
-export const createPresignedUrl = async (fileName: string) => {
-
-    const fileId = ulid()
-    const match = /\.[a-zA-Z0-9]+$/gi.exec(fileName)
-    if (!match) {
-        throw new Error('ファイル名の形式がただしくありません')
-    }
-    const key = `${fileId}${match[0]}`;
-    const command = new PutObjectCommand({ Bucket: BUCKET, Key: key });
-    const url = await getSignedUrl(clientForFrontEnd, command, { expiresIn: 3600 })
-    return { fileId, url }
+export const createPresignedUrlAction = async (fileName: string) => {
+    return createPresignedUrl(fileName)
 };
 
-export const getFileUrl = async (fileId: string, fileName: string) => {
-    const match = /\.[a-zA-Z0-9]+$/gi.exec(fileName)
-    if (!match) {
-        throw new Error('ファイル名の形式がただしくありません')
-    }
-    const key = `${fileId}${match[0]}`;
-    const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
-
-    return await getSignedUrl(clientForFrontEnd, command, { expiresIn: 9999999999 });
+export const getFileUrlAction = async (fileId: string, fileName: string) => {
+    return await getFileUrl(fileId, fileName)
 };
 
-export async function storeContent(json: SerializedEditorState, contentText: string, postId: string) {
-    const storeData = JSON.stringify(json, null, "\t")
-    const publicPath = path.join(process.cwd(), 'blogs', postId);
-    if (!fs.existsSync(publicPath)) {
-        fs.mkdirSync(publicPath, { recursive: true });
-    }
-    const jsonFileName = `content.json`
-    const textFileName = `content.txt`
-    fs.writeFileSync(path.join(publicPath, jsonFileName), storeData)
-    fs.writeFileSync(path.join(publicPath, textFileName), contentText)
-    await storeJsonInStorage(json, postId)
+export async function storeContentAction(json: SerializedEditorState, contentText: string, blogId: string) {
+    await storeStorage({ contentText, json, blogId })
+    return await storePostInDb({ blogId })
 }
 
-export async function storeJsonInStorage(json: SerializedEditorState, postId: string) {
+export async function storeJsonInStorageAction(json: SerializedEditorState, blogId: string) {
 
-    const storeData = JSON.stringify(json, null, "\t")
-    const fileName = `content.json`
-
-    const comand = new PutObjectCommand({ Bucket: 'blogs', Key: `${postId}/${fileName}`, Body: storeData })
-    await client.send(comand)
-
-    // バックアップが一定個数超えたら削除する
-    // なお今は一つのファイルを上書きしているので、以下削除処理は実行されない
-    const getCommand = new ListObjectsCommand({ Bucket: 'blogs', Prefix: `${postId}` })
-    const res = await client.send(getCommand)
-    const maxObjectCount = 10;
-    const contents = res.Contents;
-    if (contents && contents.length >= maxObjectCount) {
-        const deleteNums = contents.length - maxObjectCount;
-        const delteObjects = [...Array(deleteNums)].map((_, index): ObjectIdentifier => ({ Key: contents[index].Key }))
-        const deleteCommands = new DeleteObjectsCommand({ Bucket: 'blogs', Delete: { Objects: delteObjects } })
-        await client.send(deleteCommands)
-    }
+    await storeJsonInStorage(json, blogId)
 
 }
 
-export async function storeTitle(postId: string, title: string) {
-    const publicPath = path.join(process.cwd(), 'blogs', postId);
-    if (!fs.existsSync(publicPath)) {
-        fs.mkdirSync(publicPath, { recursive: true });
-    }
-    const fileNamePattern = /[\s\S]*\.title/g
-    const titleFileName = fs.readdirSync(publicPath).find(file => fileNamePattern.test(file))
-    if (titleFileName) {
-        fs.unlinkSync(path.join(publicPath, titleFileName));
-    }
-    fs.writeFileSync(path.join(publicPath, `${title}.title`), title)
+export async function storeTitleAction(postId: string, title: string) {
+    await storeTitle(postId, title)
 }
 
-export async function getBlogJson() {
-    const command = new ListObjectsCommand({ Bucket: 'blogs', Prefix: 'uuid/' })
-    const objects = await client.send(command)
-    const latestJsonFile = objects.Contents?.at(-1);
-    if (!latestJsonFile) {
-        return null;
-    }
-
-    const getCommand = new GetObjectCommand({ Bucket: 'blogs', Key: latestJsonFile.Key })
-    const object = await client.send(getCommand);
-    return await object.Body?.transformToString();
+export async function getBlogJsonAction() {
+    return await getBlogJson()
 }
 
-export async function getBlogJsonByPublicDir(postId: string) {
-    const publicPath = path.join(process.cwd(), 'blogs', postId);
-    const fileName = `content.json`
-    try {
-        const contentFile = fs.readFileSync(path.join(publicPath, fileName))
-        return contentFile.toString()
-    } catch {
-        return null
-    }
+export async function getBlogJsonByPublicDirAction(postId: string) {
+    return getBlogJsonByPublicDir(postId)
+}
+
+export async function getBlogByIdAction(blogId: string) {
+    return await getBlogById(blogId)
 }
 
 export async function getUsers(userName: string) {

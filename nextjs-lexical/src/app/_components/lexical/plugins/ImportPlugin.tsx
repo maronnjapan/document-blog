@@ -1,17 +1,11 @@
-import { getBlogJsonByPublicDir } from "@/app/actions";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $createParagraphNode, ParagraphNode } from "lexical";
-import { useEffect } from "react";
 
-export const ImportPlugin = ({ postId }: { postId: string }) => {
+
+export const ImportPlugin = ({ content }: { content: string }) => {
     const [editor] = useLexicalComposerContext();
 
-    useEffect(() => {
-        getBlogJsonByPublicDir(postId).then((res) => {
-            const editorState = editor.parseEditorState(res ?? '');
-            editor.setEditorState(editorState);
-        }).catch(() => { alert('エラーによってインポートができませんでした') })
-    }, []);
+    const editorState = editor.parseEditorState(content);
+    editor.setEditorState(editorState);
 
     return null;
 };

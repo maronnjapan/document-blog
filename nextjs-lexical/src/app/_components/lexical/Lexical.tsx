@@ -40,7 +40,7 @@ const initialConfig: ComponentProps<typeof LexicalComposer>["initialConfig"] = {
     theme: theme
 };
 
-export const Lexical = ({ postId, isResize }: { postId: string, isResize?: boolean }) => {
+export const Lexical = ({ postId, content, isResize }: { postId: string, content: string, isResize?: boolean }) => {
     const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
     const [floatingAnchorElem, setFloatingAnchorElem] =
         useState<HTMLDivElement | null>(null);
@@ -76,7 +76,7 @@ export const Lexical = ({ postId, isResize }: { postId: string, isResize?: boole
             <CodeHighlightPlugin></CodeHighlightPlugin>
             <GenerateHtmlPlugin></GenerateHtmlPlugin>
             <LexicalAutoLinkPlugin></LexicalAutoLinkPlugin>
-            <ImportPlugin postId={postId}></ImportPlugin>
+            <ImportPlugin content={content}></ImportPlugin>
             <LinkPlugin />
             <LinkPreviewPlugin></LinkPreviewPlugin>
             <ImageRegister />
