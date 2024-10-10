@@ -4,7 +4,6 @@ import { pagesPath } from "@/router/$path";
 import Link from "next/link";
 import * as fs from 'fs'
 import path from "path";
-import { VStack } from "@chakra-ui/react";
 import { getBlogByIdAction, getBlogJsonByPublicDirAction } from "@/app/actions";
 
 export default async function Page({ params }: { params: { postId: string } }) {
@@ -25,9 +24,9 @@ export default async function Page({ params }: { params: { postId: string } }) {
     // console.log(title2)
 
     return (
-        <VStack align={'start'}>
+        <div style={{ display: 'flex', flexDirection: 'column' }} >
             <AutoSaveTitleInput postId={params.postId} title={title}></AutoSaveTitleInput>
             <Lexical postId={params.postId} content={content ?? ''} isResize></Lexical>
-        </VStack>
+        </div>
     );
 };

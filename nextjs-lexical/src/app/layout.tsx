@@ -1,4 +1,3 @@
-import { ChakraProvider } from "@chakra-ui/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import 'ress'
@@ -28,14 +27,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ChakraProvider cssVarsRoot="body">
-          <AuthProvider>
-            <Layout>
-              {children}
-            </Layout>
-          </AuthProvider>
+        <AuthProvider>
+          <Layout>
+            {children}
+          </Layout>
+        </AuthProvider>
 
-        </ChakraProvider>
       </body>
     </html>
   );
